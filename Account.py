@@ -36,6 +36,9 @@ def logIn(email, psd):
     :return: True: login successes
              False: login failed
              IF USER NOT EXISTS, return string
+             -1: user not exists
+             2: already logged in
+
     """
 
     if Database.checkUserExists(email):
@@ -60,9 +63,10 @@ def logIn(email, psd):
                 return True
         else:
             print("Already logged in!")
+            return '2'
     else:
         print("User not exists")
-        return False
+        return '-1'
 
 
 def logOut(email):
