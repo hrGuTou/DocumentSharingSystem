@@ -1,5 +1,6 @@
 import MySQLdb
 
+
 """
     This file handle all the database queries and related functions.
     
@@ -197,3 +198,6 @@ def addTaboo(listoftaboo):
     db.commit()
 
     return True
+
+def createDoc(email):
+    pass
