@@ -3,33 +3,26 @@ import urllib
 from time import strftime, localtime
 
 from firebase_admin import db
-from firebase_admin import storage
-
 from Firebase_cred.Firebase import initial
 
 initial()
 
 root = db.reference()
-# Add a new user under /users.
-
-#
-"""
-users_ref = root.child('User')
-users_ref.child('hrgutougmailcom').set({
-    'date_of_birth': 'June 23, 1912',
-    'full_name': 'Alan Turing'
-})
+tabooWord = root.child('Taboo_word')
+user = root.child('User')
+test = 'hi'
 
 
-ref = db.reference('User').child('hrgutougmailcom')
-print(ref.get())
-"""
 def removeIllegalChar(str):
     return ''.join(e for e in str if e.isalnum())
 
+def tolower(word):
+    return word.lower()+test
+
+
 def checkUserExists(email):
     try:
-        ref = db.reference('User').child(removeIllegalChar(email))
+        ref = user.child(removeIllegalChar(email))
         if not ref.get() == None:
             return True
         else:
@@ -38,47 +31,61 @@ def checkUserExists(email):
         print("checkUserExists()")
         print(e)
 
+
 def addUser(email, psd, userType):
     try:
-        newUser = root.child('User')
-        newUser.child(removeIllegalChar(email)).set({
-            'Email':email,
-            'Password':psd,
-            'User_Type':userType,
-            'Logged_in': '0'
+        user.child(removeIllegalChar(email)).set({
+            'Email': email,
+            'Password': psd,
+            'User_type': userType,
+            'Logged_in': False
         })
+
         return True
     except Exception as e:
         print("addUser()")
         print(e)
 
+
 def loginPassword(email):
     try:
-        ref = db.reference('User').child(removeIllegalChar(email)).get()
+        ref = user.child(removeIllegalChar(email)).get()
         return ref['Password']
     except Exception as e:
         print("login()")
         print(e)
 
+
 def checkLoginStat(email):
     try:
-        ref = db.reference('User').child(removeIllegalChar(email)).get()
+        ref = user.child(removeIllegalChar(email)).get()
         return ref['Logged_in']
 
     except Exception as e:
         print("checkLoginStat")
         print(e)
 
+def changeUserType(email, userType):
+    try:
+        ref = user.child(removeIllegalChar(email))
+        ref.update({
+            'User_type' : userType
+        })
+
+    except Exception as e:
+        print("changeUserType()")
+        print(e)
+
 def changeLoginStat(email, stat):
     """
 
     :param email:
-    :param stat: 0 for logged out, 1 for logged in
+    :param stat: False for logged out, True for logged in
     :return:
     """
-    if stat == '0' or stat == '1':
+    if stat == False or stat == True:
         try:
-            ref = db.reference('User').child(removeIllegalChar(email))
+            ref = user.child(removeIllegalChar(email))
             ref.update({
                 'Logged_in': stat
             })
@@ -87,10 +94,10 @@ def changeLoginStat(email, stat):
             print("changeLoginStat()")
             print(e)
 
+
 def SUexists():
     try:
-        ref = db.reference('User')
-        snapshot = ref.order_by_child('User_Type').equal_to('0').get()
+        snapshot = user.order_by_child('User_type').equal_to('0').get()
         if snapshot:
             return True
         else:
@@ -100,14 +107,16 @@ def SUexists():
         print("SUexists")
         print(e)
 
+
 def currentUserGroup(email):
     try:
-        ref = db.reference('User').child(removeIllegalChar(email)).get()
-        return ref['User_Type']
+        ref = user.child(removeIllegalChar(email)).get()
+        return ref['User_type']
 
     except Exception as e:
         print("currentUserGroup()")
         print(e)
+
 
 def uploadDoc(email, doc, fileName):
     """
@@ -118,10 +127,11 @@ def uploadDoc(email, doc, fileName):
     :param doc: location of the file
     :return: True for load successfully
     """
+    timeCode = strftime("%Y-%m-%d-%H-%M-%S", localtime())
     userID = removeIllegalChar(email)
     file = open(doc, "rb")
     file_in = file.read()
-    target = "https://firebasestorage.googleapis.com/v0/b/llhc-db662.appspot.com/o/savedocs%2F"+userID+"%2F"+fileName
+    target = "https://firebasestorage.googleapis.com/v0/b/llhc-db662.appspot.com/o/savedocs%2F" + userID + "%2F" + fileName + "%2F" + timeCode
     head = {'Content-Type': 'text/plain'}
 
     req = urllib.request.Request(target, data=file_in, headers=head, method="POST")
@@ -132,13 +142,74 @@ def uploadDoc(email, doc, fileName):
         msg = json.loads(e.read())
         print(msg['error']['message'])
     else:
-        time = strftime("%Y-%m-%d %H:%M:%S", localtime())
-        fileHisotry = root.child('User').child(removeIllegalChar(email)).child('Document History')
+        fileHisotry = root.child('User').child(removeIllegalChar(email)).child('Document_history')
         fileHisotry.update({
-            time : fileName
-        }
-    )
+            timeCode: fileName
+        })
         return True
 
-def addTaboo()
-    pass
+
+def addTaboo(listoftaboo):
+    try:
+        for word in listoftaboo:
+            tabooWord.update({
+                tolower(word): tolower(word)
+            })
+
+        return True
+
+    except Exception as e:
+        print("addTaboo()")
+        print(e)
+
+def getTaboo():
+    try:
+        listoftaboo = tabooWord.get()
+        listoftaboo.pop(0)
+        return listoftaboo
+
+    except Exception as e:
+        print("getTaboo()")
+        print(e)
+
+
+def deleteTaboo(listofword):
+    try:
+        ref = tabooWord
+        for word in listofword:
+           ref.child(tolower(word)).delete()
+
+        return True
+
+    except Exception as e:
+        print("deleteTaboo()")
+        print(e)
+
+def suggestTaboo(email, listofword):
+    try:
+        ref = user.child(removeIllegalChar(email))
+        for word in listofword:
+            ref.update({'Suggest_taboo':{
+                word:word
+            }})
+
+    except Exception as e:
+        print("suggestTaboo()")
+        print(e)
+
+def deleteSuggestTaboo(email, listofword):
+    try:
+        ref = user.child(removeIllegalChar(email)).child('Suggest_taboo')
+        for word in listofword:
+            ref.child(tolower(word)).delete()
+
+        return True
+
+    except Exception as e:
+        print("deleteSuggestTaboo")
+        print(e)
+
+
+
+if __name__ == '__main__':
+    addUser('newuser','abc','1')
