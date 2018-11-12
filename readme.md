@@ -13,7 +13,7 @@ LLHC
 # Backend:
 Python<br>
 Socket.io<br>
-MySql<br>
+Firebase<br>
 
 # Frontend:
 PYQT5
