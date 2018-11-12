@@ -5,9 +5,6 @@ from Account import *
     Main service file 
 """
 
-def startApp():
-    db = Database
-    db.makeTable()
 
 def ROOTUSER(email):
     """
@@ -19,8 +16,8 @@ def ROOTUSER(email):
     :param password:
     :return:
     """
-    if Database.SUexists() == False:
-        promoteOU(email)
+    if DB.SUexists() == False:
+        promoteToSU(email)
 
 
 def signUp(email, password):
@@ -34,9 +31,9 @@ def signUp(email, password):
         if createGuest(email, password):
             return "Welcome guest!"
 
-        if createAcc(email,password):
+    if createAcc(email,password):
             return "Sign up success!"
-        else:
+    else:
             return "User already exists, please login."
 
 def signIn(email, password):
@@ -46,14 +43,24 @@ def signIn(email, password):
     :param password:
     :return:
     """
+    status = logIn(email,password)
 
-    if logIn(email, password):
+    if status == '1':
         return "Welcome!"
+    elif status == '2':
+        return "Already logged in"
+    elif status == '3':
+        return "Welcome! Guest"
+    elif status == '-1':
+        return "User not exists"
     else:
-        return "Login error."
+        return "Wrong password"
+
 
 def signOut(email):
     if logOut(email):
         return "Logout success!"
 
 
+if __name__ == '__main__':
+    print(signIn('guest','asf'))

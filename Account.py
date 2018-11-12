@@ -4,7 +4,7 @@
     TODO: change password and add userName
 """
 
-import Database
+import DB
 import bcrypt
 
 
@@ -18,13 +18,14 @@ def createAcc(email, psd):
              true: user added into database
     """
 
-    if Database.checkUserExists(email):
+    if DB.checkUserExists(email):
         return False
 
     else:
         """password encoded"""
         hashedPSD = bcrypt.hashpw(psd.encode('utf8'), bcrypt.gensalt())
-        Database.addUser(email, hashedPSD, '2')  # 2 for OU
+        print(type(hashedPSD))
+        DB.addUser(email, hashedPSD.hex() , '1')  # 1 for OU
         return True
 
 
@@ -41,31 +42,30 @@ def logIn(email, psd):
 
     """
 
-    if Database.checkUserExists(email):
-        if Database.logInStat(email) == 0:
+    if DB.checkUserExists(email):
+        if not DB.checkLoginStat(email):
             """
                 if account exists and not logged in, proceed login
                 
             """
-            if not (psd == "" and Database.currentUserGroup(email) == "Guest User"):
+            if not (psd == "" or DB.currentUserGroup(email) == "2"):
                 """
                     If the password string is not empty and is not a GU, proceed psd check 
                 """
-                hashed = Database.login(email)
-                if bcrypt.checkpw(psd.encode('utf8'), hashed.encode('utf8')):
-                    sql = "UPDATE User SET LoginStat = '1' WHERE Email = '" + email + "';"
-                    Database.cur.execute(sql)
-                    Database.db.commit()
-                    return True
+                hashed = bytes.fromhex(DB.loginPassword(email))
+                if bcrypt.checkpw(psd.encode('utf8'), hashed):
+                    DB.changeLoginStat(email, True)
+                    return '1'
                 else:
-                    return False
+                    return '0'
             else:
-                return True
+                DB.changeLoginStat(email, True)
+                return '3'
         else:
-            print("Already logged in!")
+
             return '2'
     else:
-        print("User not exists")
+
         return '-1'
 
 
@@ -75,23 +75,19 @@ def logOut(email):
     :param email:
     :return:
     """
-    if Database.checkLoginStat(email) == 1:
-        sql = "UPDATE User SET LoginStat = '0';"
-        Database.cur.execute(sql)
-        Database.db.commit()
+    if DB.checkLoginStat(email):
+        DB.changeLoginStat(email, False)
         return True
 
 
-def promoteOU(email):
+def promoteToSU(email):
     """
         If current database doesn't contain a super user, promote the current logged
         in user to be a super user.
     :param email:
     :return:
     """
-    sql = "UPDATE User SET UserType = '1' WHERE Email = '" + email + "';"
-    Database.cur.execute(sql)
-    Database.db.commit()
+    DB.changeUserType(email, '0')
     return True
 
 
@@ -102,6 +98,7 @@ def createGuest(email, password):
     :param password: IS AN EMPTY STRING
     :return:
     """
-    if not Database.checkUserExists(email):
-        Database.addUser(email, password, '3')  # 3 for GU
+    if not DB.checkUserExists(email):
+        DB.addUser(email, password, '2')  # 2 for GU
         return True
+

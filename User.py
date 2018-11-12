@@ -1,4 +1,4 @@
-import Database
+import DB
 
 """
     Main class for User, subclasses will be SU, OU, and GU.
@@ -65,8 +65,8 @@ class SU(OU):
         """
         if membership == 2 and membership == 3:
             sql = "UPDATE User SET UserType = '"+membership+"' WHERE Email = '" + email + "';"
-            Database.cur.execute(sql)
-            Database.db.commit()
+            DB.cur.execute(sql)
+            DB.db.commit()
             return True
         else:
             return False
@@ -77,14 +77,14 @@ class SU(OU):
             2D list which show who suggested what words
         :return: Return the suggested Taboo word.
         """
-        return Database.getSugTaboo()
+        return DB.getSugTaboo()
 
     def getTaboo(self):
         """
 
         :return: current list of taboo words in database.
         """
-        return Database.getTaboo()
+        return DB.getTaboo()
 
     def deleteTaboo(self, listofwords):
         """
@@ -94,8 +94,8 @@ class SU(OU):
         """
         for word in listofwords:
             delete = "UPDATE Taboo SET TabooWord = NULL WHERE TabooWord = '"+word+"';"
-            Database.cur.execute(delete)
-        Database.db.commit()
+            DB.cur.execute(delete)
+        DB.db.commit()
         return True
 
     def addTaboo(self, listoftaboo):
@@ -104,7 +104,7 @@ class SU(OU):
         :param listoftaboo:
         :return: added words
         """
-        if Database.addTaboo(listoftaboo):
+        if DB.addTaboo(listoftaboo):
             return True
 
     def unlock(self, DocID):
@@ -114,7 +114,7 @@ class SU(OU):
         :return:  True: unlock success
                     False: error
         """
-        if Database.unlockDoc(DocID):
+        if DB.unlockDoc(DocID):
             return True
         else:
             return False
