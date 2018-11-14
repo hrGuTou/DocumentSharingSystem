@@ -78,6 +78,8 @@ def logOut(email):
     if DB.checkLoginStat(email):
         DB.changeLoginStat(email, False)
         return True
+    else:
+        return False
 
 
 def promoteToSU(email):

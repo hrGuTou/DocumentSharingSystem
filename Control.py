@@ -31,19 +31,20 @@ def signUp(email, password):
         if createGuest(email, password):
             return "Welcome guest!"
 
-    if createAcc(email,password):
-            return "Sign up success!"
+    if createAcc(email, password):
+        return "Sign up success!"
     else:
-            return "User already exists, please login."
+        return "User already exists, please login."
+
 
 def signIn(email, password):
     """
 
-    :param email:
-    :param password:
-    :return:
+    :param email: required
+    :param password: required only for OU and SU, GU can leave it blank
+    :return: login status in string format
     """
-    status = logIn(email,password)
+    status = logIn(email, password)
 
     if status == '1':
         return "Welcome!"
@@ -58,9 +59,16 @@ def signIn(email, password):
 
 
 def signOut(email):
+    """
+        Use this function to log out user.
+    :param email:
+    :return: return log out status
+    """
     if logOut(email):
         return "Logout success!"
+    else:
+        return "User not logged in"
 
 
 if __name__ == '__main__':
-    print(signIn('guest','asf'))
+    print(signIn('guest', 'asf'))

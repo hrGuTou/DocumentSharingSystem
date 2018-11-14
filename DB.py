@@ -123,6 +123,7 @@ def uploadDoc(email, doc, fileName):
         CITED FROM https://github.com/PhantomInsights/firebase-python/blob/master/storage/README.md
         CREATOR: https://github.com/agentphantom
         TODO: IMPLEMENT VERSION HISTORY
+        upload docs to cloud
     :param email: unique ID
     :param doc: location of the file
     :return: True for load successfully
