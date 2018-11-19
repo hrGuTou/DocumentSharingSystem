@@ -1,5 +1,7 @@
+import codecs
 import json
 import urllib
+from collections import OrderedDict
 from time import strftime, localtime
 
 from firebase_admin import db
@@ -145,7 +147,7 @@ def uploadDoc(email, doc, fileName):
     else:
         fileHisotry = root.child('User').child(removeIllegalChar(email)).child('Document_history')
         fileHisotry.update({
-            timeCode: fileName
+            timeCode:fileName
         })
         return True
 
@@ -211,6 +213,63 @@ def deleteSuggestTaboo(email, listofword):
         print(e)
 
 
+def listallhistory(email,filename):
+    """
+
+    :param filename:
+    :return: list of edit history for a file
+    """
+    try:
+        ref = user.child(removeIllegalChar(email)).child("Document_history").order_by_value().equal_to(filename)
+        snapshot = ref.get()
+        result = []
+        for key in snapshot:
+            result.append(key)
+
+        return result
+
+    except Exception as e:
+        print("listallhistory()")
+        print(e)
+
+def listallfiles(email):
+    """
+
+    :param email:
+    :return:     list of all the current user documents
+    """
+    try:
+        data = user.child(removeIllegalChar(email)).child("Document_history").get()
+        result = []
+        for key in data:
+            result.append(data[key])
+
+        return list(OrderedDict.fromkeys(result))
+
+    except Exception as e:
+        print('listallfiles()')
+        print(e)
+
+def getLastestVersion(email, filename):
+    result = listallhistory(email,filename)
+    return result[len(result)-1]
+
+def openDoc(email, filename):
+    """
+
+    :param email:
+    :param filename:
+    :return: return the content of a file
+    """
+    url = "https://firebasestorage.googleapis.com/v0/b/llhc-db662.appspot.com/o/savedocs%2F"+removeIllegalChar(email)+"%2F"+filename+"%2F"+getLastestVersion(email,filename)+"?alt=media"
+
+    print(getLastestVersion(email, filename))
+    urllib.request.urlretrieve(url, "cache")
+    file = open('cache', "r")
+    fileout= file.read()
+    file.close()
+    return fileout
 
 if __name__ == '__main__':
-    addUser('newuser','abc','1')
+    #print(openDoc('test1@gmail.com','test'))
+    #uploadDoc('test1@gmail.com','test.txt','test')
