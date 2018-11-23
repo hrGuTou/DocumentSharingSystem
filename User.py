@@ -119,7 +119,9 @@ class SU(OU):
         if DB.addTaboo(listoftaboo):
             return True
 
-    def unlock(self, DocID):#if SU already reserved all the right from OU, we'll still need it in here?
+
+    def unlock(self, DocID): #if it's already in OU and SU reserved all the ability from OU and GU, we'll still need it in here? 
+
         """
         :param DocID:
         :return:  True: unlock success
