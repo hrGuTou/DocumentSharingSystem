@@ -20,6 +20,10 @@ class User():
     def suggestTaboo(self, words):
         pass
 
+    def Apply(self):
+        pass
+    #sign up for membership
+
 
 class GU(User):
     def __init__(self, email):
@@ -40,23 +44,34 @@ class OU(User):
     def setPermission(self, DocID):
         pass
 
-    def invitation(self, email):
+    def invitation(self, email):#also need ability to deny or cancel a invitation.
         pass
 
     def lockFile(self, DocID):
         pass
 
-    def unlockFile(self, DocID):
+    def unlockFile(self, DocID):# after when the file has been updated by other ou?
         pass
 
+    def ActionRestrict(self):
+        pass
+        # When the OU has been reported of using taboo word, all the activity under OU
+        # will be restrict til the taboo word been fixed
 
-
+    def Report(self):
+        pass
+        #report other OU's update to onwer
+        #report onwer to SU
+    def search(self):
+        pass
+        #search file by keyword
+        #search other user by name or info
 
 class SU(OU):
     def __init__(self, email):
         OU.__init__(self, email)
 
-    def manageMember(self, email, membership):
+    def manageMember(self, email, membership):#has ability to deny an application from new GU
         """
         :param email:
         :param membership: 2 for OU, 3 for GU
@@ -81,14 +96,12 @@ class SU(OU):
 
     def getTaboo(self):
         """
-
         :return: current list of taboo words in database.
         """
         return DB.getTaboo()
 
     def deleteTaboo(self, listofwords):
         """
-
         :param listofwords:
         :return: True when finished deleting
         """
@@ -100,16 +113,14 @@ class SU(OU):
 
     def addTaboo(self, listoftaboo):
         """
-
         :param listoftaboo:
         :return: added words
         """
         if DB.addTaboo(listoftaboo):
             return True
 
-    def unlock(self, DocID):
+    def unlock(self, DocID):#if SU already reserved all the right from OU, we'll still need it in here?
         """
-
         :param DocID:
         :return:  True: unlock success
                     False: error
@@ -124,4 +135,3 @@ class SU(OU):
     def complain(self,DocID):
         """TODO: dont know what is this"""
         pass
-
