@@ -8,8 +8,7 @@ import DB
 import bcrypt
 
 
-
-def createAcc(email, psd):
+def createAcc(email, psd, name, techinterest):
     """
         For OU
     :param email:
@@ -25,7 +24,7 @@ def createAcc(email, psd):
         """password encoded"""
         hashedPSD = bcrypt.hashpw(psd.encode('utf8'), bcrypt.gensalt())
         print(type(hashedPSD))
-        DB.addUser(email, hashedPSD.hex() , '1')  # 1 for OU
+        DB.addUser(email, hashedPSD.hex(), '1', name, techinterest)  # 1 for OU
         return True
 
 
@@ -55,18 +54,18 @@ def logIn(email, psd):
                 hashed = bytes.fromhex(DB.loginPassword(email))
                 if bcrypt.checkpw(psd.encode('utf8'), hashed):
                     DB.changeLoginStat(email, True)
-                    return '1'
+                    return 1
                 else:
-                    return '0'
+                    return 0
             else:
                 DB.changeLoginStat(email, True)
-                return '3'
+                return 3
         else:
 
-            return '2'
+            return 2
     else:
 
-        return '-1'
+        return -1
 
 
 def logOut(email):
@@ -104,3 +103,36 @@ def createGuest(email, password):
         DB.addUser(email, password, '2')  # 2 for GU
         return True
 
+
+def OUapplication(email, name, listoftechinterests):
+    """
+        For GU to apply become an OU, SU has to approve it
+        ONLY 1 APPLICATION FOR EACH GU
+    :param email:
+    :param name:
+    :param listoftechinterests:
+    :return: 1 for application sent successfully,
+            -1 for reject because of multiple applications
+    """
+    if DB.firstTimeApply(email):
+        DB.application(email, name, listoftechinterests)
+        return True
+
+    else:
+        return False
+
+
+def GUpromotion(email, psd):
+    ref = DB.user.child(DB.removeIllegalChar(email))
+    ref.child('Application').delete()
+    hashedPSD = bcrypt.hashpw(psd.encode('utf8'), bcrypt.gensalt())
+
+    ref.update({
+        "User_type": '1',
+        "Password":hashedPSD.hex()
+    })
+
+
+if __name__ == "__main__":
+    #print(OUapplication('guest1', 'benzhou', ['google', 'baidu']))
+    GUpromotion('guest','123')

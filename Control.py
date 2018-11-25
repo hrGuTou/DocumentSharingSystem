@@ -1,9 +1,25 @@
-from Account import *
-
+import Account
+import DB
+import Document
+import User
 """
     All backend service/control functions will be included in this file
     Main service file 
 """
+
+def userType(email):
+    """
+
+    :param email:
+    :return: return the user type of current user
+    """
+    type = DB.currentUserGroup(email)
+    if type == '0':
+        return "Super User"
+    elif type == '1':
+        return "Ordinary User"
+    else:
+        return "Guest User"
 
 
 def ROOTUSER(email):
@@ -17,10 +33,10 @@ def ROOTUSER(email):
     :return:
     """
     if DB.SUexists() == False:
-        promoteToSU(email)
+        Account.promoteToSU(email)
 
 
-def signUp(email, password):
+def signUp(email, password, name, techInterest):
     """
        sign up to be an OU, if password field leave blank, to be a GU
     :param email:
@@ -28,13 +44,13 @@ def signUp(email, password):
     :return:
     """
     if password == "":
-        if createGuest(email, password):
-            return "Welcome guest!"
+        if Account.createGuest(email, password):
+            return 0
 
-    if createAcc(email, password):
-        return "Sign up success!"
+    if Account.createAcc(email, password, name, techInterest):
+        return 1
     else:
-        return "User already exists, please login."
+        return -1
 
 
 def signIn(email, password):
@@ -44,18 +60,10 @@ def signIn(email, password):
     :param password: required only for OU and SU, GU can leave it blank
     :return: login status in string format
     """
-    status = logIn(email, password)
+    status = Account.logIn(email, password)
 
-    if status == '1':
-        return "Welcome!"
-    elif status == '2':
-        return "Already logged in"
-    elif status == '3':
-        return "Welcome! Guest"
-    elif status == '-1':
-        return "User not exists"
-    else:
-        return "Wrong password"
+    return status
+
 
 
 def signOut(email):
@@ -64,11 +72,24 @@ def signOut(email):
     :param email:
     :return: return log out status
     """
-    if logOut(email):
+    if Account.logOut(email):
         return "Logout success!"
     else:
         return "User not logged in"
 
 
+
+
+
+def manage(email):
+    """
+         GUI for SU to manage the system
+    :param email:
+    :return:
+    """
+    pass
+
+
+
 if __name__ == '__main__':
-    print(signIn('guest', 'asf'))
+    signUp('test','123','haoran',['computer','sleep'])

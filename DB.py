@@ -1,25 +1,20 @@
-import codecs
-import json
-import urllib
-from collections import OrderedDict
-from time import strftime, localtime
-
 from firebase_admin import db
 from Firebase_cred.Firebase import initial
+from time import strftime, localtime
 
 initial()
 
 root = db.reference()
 tabooWord = root.child('Taboo_word')
 user = root.child('User')
-test = 'hi'
 
 
 def removeIllegalChar(str):
     return ''.join(e for e in str if e.isalnum())
 
+
 def tolower(word):
-    return word.lower()+test
+    return word.lower()
 
 
 def checkUserExists(email):
@@ -34,14 +29,20 @@ def checkUserExists(email):
         print(e)
 
 
-def addUser(email, psd, userType):
+def addUser(email, psd, userType, name, techInterest):
     try:
         user.child(removeIllegalChar(email)).set({
             'Email': email,
             'Password': psd,
             'User_type': userType,
-            'Logged_in': False
+            'Logged_in': False,
+            'Name': name,
         })
+
+        for interest in techInterest:
+            user.child(removeIllegalChar(email)).child('Tech_interest').update({
+                interest:interest
+            })
 
         return True
     except Exception as e:
@@ -67,16 +68,18 @@ def checkLoginStat(email):
         print("checkLoginStat")
         print(e)
 
+
 def changeUserType(email, userType):
     try:
         ref = user.child(removeIllegalChar(email))
         ref.update({
-            'User_type' : userType
+            'User_type': userType
         })
 
     except Exception as e:
         print("changeUserType()")
         print(e)
+
 
 def changeLoginStat(email, stat):
     """
@@ -120,156 +123,79 @@ def currentUserGroup(email):
         print(e)
 
 
-def uploadDoc(email, doc, fileName):
-    """
-        CITED FROM https://github.com/PhantomInsights/firebase-python/blob/master/storage/README.md
-        CREATOR: https://github.com/agentphantom
-        TODO: IMPLEMENT VERSION HISTORY
-        upload docs to cloud
-    :param email: unique ID
-    :param doc: location of the file
-    :return: True for load successfully
-    """
-    timeCode = strftime("%Y-%m-%d-%H-%M-%S", localtime())
-    userID = removeIllegalChar(email)
-    file = open(doc, "rb")
-    file_in = file.read()
-    target = "https://firebasestorage.googleapis.com/v0/b/llhc-db662.appspot.com/o/savedocs%2F" + userID + "%2F" + fileName + "%2F" + timeCode
-    head = {'Content-Type': 'text/plain'}
-
-    req = urllib.request.Request(target, data=file_in, headers=head, method="POST")
-
-    try:
-        urllib.request.urlopen(req)
-    except urllib.error.URLError as e:
-        msg = json.loads(e.read())
-        print(msg['error']['message'])
+def firstTimeApply(email):
+    """Verify that each GU can send application only once"""
+    ref = user.child(removeIllegalChar(email))
+    if ref.child("Application").get() is None:
+        return True
     else:
-        fileHisotry = root.child('User').child(removeIllegalChar(email)).child('Document_history')
-        fileHisotry.update({
-            timeCode:fileName
-        })
-        return True
+        return False
 
 
-def addTaboo(listoftaboo):
-    try:
-        for word in listoftaboo:
-            tabooWord.update({
-                tolower(word): tolower(word)
-            })
-
-        return True
-
-    except Exception as e:
-        print("addTaboo()")
-        print(e)
-
-def getTaboo():
-    try:
-        listoftaboo = tabooWord.get()
-        listoftaboo.pop(0)
-        return listoftaboo
-
-    except Exception as e:
-        print("getTaboo()")
-        print(e)
-
-
-def deleteTaboo(listofword):
-    try:
-        ref = tabooWord
-        for word in listofword:
-           ref.child(tolower(word)).delete()
-
-        return True
-
-    except Exception as e:
-        print("deleteTaboo()")
-        print(e)
-
-def suggestTaboo(email, listofword):
+def application(email, name, listofinterest):
     try:
         ref = user.child(removeIllegalChar(email))
-        for word in listofword:
-            ref.update({'Suggest_taboo':{
-                word:word
-            }})
+        ref.update({
+            "Application": {
+                "Status": "Pending",
+                "Name": name
+            }
+        })
 
-    except Exception as e:
-        print("suggestTaboo()")
-        print(e)
-
-def deleteSuggestTaboo(email, listofword):
-    try:
-        ref = user.child(removeIllegalChar(email)).child('Suggest_taboo')
-        for word in listofword:
-            ref.child(tolower(word)).delete()
-
+        for interest in listofinterest:
+            ref.child("Application/Tech_interest").update({
+                interest: interest
+            })
         return True
 
     except Exception as e:
-        print("deleteSuggestTaboo")
+        print("application()")
         print(e)
 
 
-def listallhistory(email,filename):
-    """
-
-    :param filename:
-    :return: list of edit history for a file
-    """
+def fileComplain(email, filename, content):
     try:
-        ref = user.child(removeIllegalChar(email)).child("Document_history").order_by_value().equal_to(filename)
-        snapshot = ref.get()
-        result = []
-        for key in snapshot:
-            result.append(key)
+        ref = user.child(removeIllegalChar(email)).child("Complains")
+        ref.update({
+            filename: content
+        })
+
+    except Exception as e:
+        print("fileComplain()")
+        print(e)
+
+
+def checkApplication():
+    """For SU to review GU applications"""
+    try:
+        ref = user.get()
+        result = {}
+        for key in ref:
+            if "Application" in ref[key]:
+                result[key] = ref[key]["Application"]
 
         return result
+    except:
+        print("checkApplication()")
 
-    except Exception as e:
-        print("listallhistory()")
-        print(e)
-
-def listallfiles(email):
-    """
-
-    :param email:
-    :return:     list of all the current user documents
-    """
+def applicationDecision(email, result):
     try:
-        data = user.child(removeIllegalChar(email)).child("Document_history").get()
-        result = []
-        for key in data:
-            result.append(data[key])
-
-        return list(OrderedDict.fromkeys(result))
-
+        ref = user.child(removeIllegalChar(email)).child("Application")
+        ref.update({
+            "Status":result
+        })
     except Exception as e:
-        print('listallfiles()')
+        print("applicationDecision()")
         print(e)
 
-def getLastestVersion(email, filename):
-    result = listallhistory(email,filename)
-    return result[len(result)-1]
+def getApplDecision(email):
+    try:
+        ref = user.child(removeIllegalChar(email)).child("Application/Status").get()
+        return ref
+    except Exception as e:
+        print("getApplDecision()")
+        print(e)
 
-def openDoc(email, filename):
-    """
-
-    :param email:
-    :param filename:
-    :return: return the content of a file
-    """
-    url = "https://firebasestorage.googleapis.com/v0/b/llhc-db662.appspot.com/o/savedocs%2F"+removeIllegalChar(email)+"%2F"+filename+"%2F"+getLastestVersion(email,filename)+"?alt=media"
-
-    print(getLastestVersion(email, filename))
-    urllib.request.urlretrieve(url, "cache")
-    file = open('cache', "r")
-    fileout= file.read()
-    file.close()
-    return fileout
 
 if __name__ == '__main__':
-    #print(openDoc('test1@gmail.com','test'))
-    #uploadDoc('test1@gmail.com','test.txt','test')
+    print(getApplDecision('guest'))

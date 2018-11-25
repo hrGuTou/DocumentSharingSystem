@@ -34,7 +34,8 @@ def saveDoc(email, doc, fileName):
         fileHisotry.update({
             timeCode: {
                 'Name': fileName,
-                'Locked': False
+                'Locked': False,
+                'Permission': 'Private'
             }
         })
 
@@ -56,11 +57,14 @@ def listallfiles(email):
     """
     try:
         data = DB.user.child(DB.removeIllegalChar(email)).child("Document_history").order_by_child('Name').get()
-        result = []
-        for key in data:
-            result.append(data[key]["Name"])
+        if data is None:
+            return 0
+        else:
+            result = []
+            for key in data:
+                result.append(data[key]["Name"])
 
-        return list(OrderedDict.fromkeys(result))
+            return list(OrderedDict.fromkeys(result))
 
     except Exception as e:
         print('listallfiles()')
@@ -155,6 +159,7 @@ def changeLock(email, filename):
                 'Locked': True
             })
         return True
+
     else:
         for doc in result:
             snapshot = DB.user.child(DB.removeIllegalChar(email)).child("Document_history").child(doc)
@@ -181,6 +186,39 @@ def getMostview():
     return lst[:3]
 
 
+def setPermission(email, filename, permission):
+    ref = DB.user.child(DB.removeIllegalChar(email)).child("Document_history").order_by_child("Name").equal_to(
+        filename).get()
+    result = []
+    for key in ref:
+        result.append(key)
+
+    for doc in result:
+        snapshot = DB.user.child(DB.removeIllegalChar(email)).child("Document_history").child(doc)
+        snapshot.update({
+            'Permission': permission
+        })
+
+    return True
+
+def getPermissionFiles(permissionType):
+    ref = DB.user.get()
+
+    result = {}
+
+    for key in ref:
+        if "Document_history" in ref[key]:
+            qry = []
+            for timecode in ref[key]['Document_history']:
+                if ref[key]['Document_history'][timecode]['Permission'] == permissionType:
+                    qry.append(ref[key]['Document_history'][timecode]['Name'])
+            result[key] = list(OrderedDict.fromkeys(qry))
+
+    return result
+
 if __name__ == '__main__':
     # saveDoc('viewtest','test.txt','again')
-    print(getMostview())
+    #print(getMostview())
+    #print(listallfiles('guest'))
+    #setPermission('viewtest','test1','public')
+    getPermissionFiles('public')

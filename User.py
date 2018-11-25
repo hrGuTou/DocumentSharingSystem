@@ -1,4 +1,7 @@
 import DB
+import Document
+import Taboo
+import Account
 
 """
     Main class for User, subclasses will be SU, OU, and GU.
@@ -8,50 +11,116 @@ class User():
     def __init__(self, email):
         self.email = email
 
-    def openDoc(self,DocID):
-        pass
+    def openDoc(self, fileOwner,filename, version):
+        Document.openfile(self.email, fileOwner, filename, version)
 
-    def retriveOldVer(self,DocID,VerID):
-        pass
+    def retriveOldVer(self,filename):
+        """:return list of all docs versions"""
+        Document.listallhistory(self.email,filename)
 
-    def complain(self, DocID):
-        pass
+    def filomplain(self, filename, complain):
+        DB.fileComplain(self.email, filename, complain)
 
-    def suggestTaboo(self, words):
-        pass
+    def suggestTaboo(self, listofwords):
+        Taboo.suggestTaboo(self.email, listofwords)
 
-    def Apply(self):
-        pass
-    #sign up for membership
+    def getPermission(self, permissionType):
+        """
+
+        :param permissionType: private, public, restricted, shared
+        :return: return all docs with the same permission type in dict{username:[list of filename]}
+        """
+        return Document.getPermissionFiles(permissionType)
+
+    def mostPopular(self):
+        """
+
+        :return: three tuples of the most viewed documents
+                Format is 'fileOwner','DocName', 'Views'
+                Use open Doc to open the files
+
+                CAUTION: check file property before open
+        """
+        return Document.getMostview()
+
 
 
 class GU(User):
     def __init__(self, email):
         User.__init__(self, email)
 
-    def promote(self, name, techInterests):
-        pass
 
+
+    def apply(self, name, techInterests):
+        """
+            Apply to be an OU
+        :param name:
+        :param techInterests: list of tech interest
+        :return:
+        """
+        Account.OUapplication(self.email, name, techInterests)
+        return "Application sent, pending approval"
+
+    def applybutton(self):
+        """
+
+        :return: 0 application not found for this GU, call Account.OUapplication(GUemail, name, listoftechInterests)
+                1 already applied, display error message
+
+        """
+        if DB.getApplDecision(self.email) is None:
+            return 0
+        elif DB.getApplDecision(self.email) == 'Pending':
+            return 1
+        elif DB.getApplDecision(self.email) == 'Denied':
+            return -1
+        else:   #approved
+            return 2
+
+    def GUpromotion(self, psd):
+        Account.GUpromotion(self.email,psd)
 
 
 class OU(User):
     def __init__(self,email):
         User.__init__(self, email)
 
-    def createDoc(self):
-        pass
+    def listallfiles(self):
+        return Document.listallfiles(self.email)
 
-    def setPermission(self, DocID):
+    def saveDoc(self, docLocation, filename):
+        """
+            if file is locked, save rejected
+        :param docLocation:
+        :param filename:
+        :return:
+        """
+        if not Document.isFileLocked(self.email, filename):
+            Document.saveDoc(self.email, docLocation, filename)
+        else:
+            return "File is locked, save unsuccessful"
+
+    def setPermission(self, DocID, permission):
+        """each document default permission is private"""
         pass
 
     def invitation(self, email):#also need ability to deny or cancel a invitation.
         pass
 
-    def lockFile(self, DocID):
+    def sentInvitation(self, email):
         pass
 
-    def unlockFile(self, DocID):# after when the file has been updated by other ou?
+    def answerInvitation(self, email):
         pass
+
+    def lockFile(self, filename):
+        """currently can lock the file OU owned
+            TODO: lock other OU files
+            """
+        Document.changeLock(self.email, filename)
+
+        return Document.isFileLocked(self.email, filename)
+
 
     def ActionRestrict(self):
         pass
@@ -62,78 +131,77 @@ class OU(User):
         pass
         #report other OU's update to onwer
         #report onwer to SU
+
     def search(self):
         pass
         #search file by keyword
         #search other user by name or info
 
+
 class SU(OU):
     def __init__(self, email):
         OU.__init__(self, email)
 
-    def manageMember(self, email, membership):#has ability to deny an application from new GU
+    def reviewApplication(self):
         """
-        :param email:
-        :param membership: 2 for OU, 3 for GU
-        :return: True for update successfully
-                False for invalid membership input
+
+        :return: a dictionary for all application
         """
-        if membership == 2 and membership == 3:
-            sql = "UPDATE User SET UserType = '"+membership+"' WHERE Email = '" + email + "';"
-            DB.cur.execute(sql)
-            DB.db.commit()
-            return True
+        allApplication = DB.checkApplication()
+
+        return allApplication
+
+    def applicationDecision(self, GU, decision):
+        """
+
+        :param GU:
+        :param decision: 1 for approve, 0 for deny
+        :return:
+        """
+        if decision == 1:
+            DB.applicationDecision(GU, 'Approved')
+        elif decision == 0:
+            DB.applicationDecision(GU, 'Denied')
         else:
-            return False
+            return "Decision input error"
+
 
 
     def getSuggestTaboo(self):
         """
-            2D list which show who suggested what words
-        :return: Return the suggested Taboo word.
+        :return: Return the suggested Taboo word in dictionary.
         """
-        return DB.getSugTaboo()
+        return Taboo.getSuggestedTaboo()
 
     def getTaboo(self):
         """
+
         :return: current list of taboo words in database.
         """
-        return DB.getTaboo()
+        return Taboo.getTaboo()
 
     def deleteTaboo(self, listofwords):
         """
+
         :param listofwords:
         :return: True when finished deleting
         """
-        for word in listofwords:
-            delete = "UPDATE Taboo SET TabooWord = NULL WHERE TabooWord = '"+word+"';"
-            DB.cur.execute(delete)
-        DB.db.commit()
-        return True
+        return Taboo.deleteTaboo(listofwords)
+
 
     def addTaboo(self, listoftaboo):
         """
+
         :param listoftaboo:
         :return: added words
         """
-        if DB.addTaboo(listoftaboo):
+        if Taboo.addTaboo(listoftaboo):
             return True
-
-
-    def unlock(self, DocID): #if it's already in OU and SU reserved all the ability from OU and GU, we'll still need it in here? 
-
-        """
-        :param DocID:
-        :return:  True: unlock success
-                    False: error
-        """
-        if DB.unlockDoc(DocID):
-            return True
-        else:
-            return False
-
-
 
     def complain(self,DocID):
         """TODO: dont know what is this"""
         pass
+
+if __name__ == "__main__":
+    newuser = OU('test')
+    print(newuser.mostPopular())
