@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <Title>Editor</Title>
+      <script type = "text/javascript">
+          function taboo(word, e){
+            var textfield = document.getElementById(e);
+            var regex = new RegExp(word,"g")
+            textfield.value = textfield.value.replace(regex,"UNK");
+          }
+
+      </script>>
+
+
+  </head>
+
+  <body>
+    <textarea id="Editor" onkeydown="taboo('test','Editor')" onkeyup="taboo('test','Editor')" type="text" name="txtarea" style="font-family: Arial;font-size: 14pt;width:100%;height:94vh">
+</textarea>
+  </body>
+</html>
