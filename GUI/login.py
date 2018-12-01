@@ -72,11 +72,11 @@ class Login(QtWidgets.QWidget):
 
         email = self.email_field.text()
         password = self.password_field.text()
+        status = Control.signIn(email,password)
 
         #============================================
-        print(Control.signIn(email, password))
 
-        if Control.signIn(email, password) == -1:
+        if status == -1:
             em = QtWidgets.QMessageBox()
             em.setIcon(QtWidgets.QMessageBox.Warning)
             em.setText("Account not found, Please create an account")
@@ -85,17 +85,20 @@ class Login(QtWidgets.QWidget):
             self.signup_event()
 
         # correct users
-        elif Control.signIn(email, password) == 1:
+        elif status == 1:
             print('here')
-            self.isIn_event()
+            self.isIn_event()   #!ISSUE
 
         # already login
-        elif Control.signIn(email, password) == 2:
+        elif status == 2:
             em = QtWidgets.QMessageBox()
             em.setIcon(QtWidgets.QMessageBox.Warning)
             em.setText("Already login!")
             em.setStandardButtons(QtWidgets.QMessageBox.Ok)
             em.exec_()
+
+        else: # THIS RETURN 3, LAUNCH GUEST UI
+            print("HERE ADD GUEST UI")
 
     def signup_event(self):
         self.switch_window.emit()

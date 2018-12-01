@@ -15,7 +15,7 @@ class Controller:
             self.login.switch_window.connect(self.show_signup)
 
         else:
-            print("not a new accont")
+            print("not a new account")
         self.login.show()
 
     def show_signup(self):
