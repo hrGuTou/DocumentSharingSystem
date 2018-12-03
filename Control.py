@@ -44,7 +44,7 @@ def signUp(email, password, name, techInterest):
     :return:
     """
     if password == "":
-        if Account.createGuest(email, password):
+        if Account.createGuest(email, password, name, techInterest):
             return 0
 
     if Account.createAcc(email, password, name, techInterest):
@@ -92,4 +92,4 @@ def manage(email):
 
 
 if __name__ == '__main__':
-    signUp('test','123','haoran',['computer','sleep'])
+    print(signUp('testababa123','','guest',['computer','sleep']))

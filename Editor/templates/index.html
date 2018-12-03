@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <Title>Editor</Title>
+      <script src="{{url_for('static', filename='TabooChecker.js')}}"></script>
+      <script src="{{url_for('static', filename='File.js')}}"></script>
+      <script src="{{url_for('static', filename='node_modules/socket.io-client/dist/socket.io.js')}}"></script>
+
+      <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+      <script>
+        <!--SocketIO real time editing implementation-->
+        $(function () {
+          var socket = io();
+          $('#Editor').bind('input propertychange', function() {
+              socket.emit('input', this.value);
+              var textfield = document.getElementById("Editor").value;
+            $.post( "/postmethod", {
+                javascript_data: textfield
+            });
+              return false;
+            });
+
+        socket.on('input',function(textInput){
+          console.log(textInput)
+          $('#Editor').val(textInput);
+        });
+      });
+      </script>
+
+      <script>
+      <!--Get variables data from python-->
+          $.get("/openfile", function(data){
+            var text = $.parseJSON(data)
+             $('#Editor').val(text);
+          });
+
+      </script>
+  </head>
+
+  <body>
+    <textarea autofocus id="Editor"  onkeyup="taboo('Editor')"  style="font-family: Arial;font-size: 14pt;width: 100%;height: 94vh"/>
+    </textarea>
+  </body>
+</html>

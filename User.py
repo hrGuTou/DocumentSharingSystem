@@ -2,21 +2,23 @@ import DB
 import Document
 import Taboo
 import Account
+import requests
 
 """
     Main class for User, subclasses will be SU, OU, and GU.
 """
 
+
 class User():
     def __init__(self, email):
         self.email = email
 
-    def openDoc(self, fileOwner,filename, version):
+    def openDoc(self, fileOwner, filename, version):
         Document.openfile(self.email, fileOwner, filename, version)
 
-    def retriveOldVer(self,filename):
+    def retriveOldVer(self, filename):
         """:return list of all docs versions"""
-        Document.listallhistory(self.email,filename)
+        Document.listallhistory(self.email, filename)
 
     def filomplain(self, filename, complain):
         DB.fileComplain(self.email, filename, complain)
@@ -43,13 +45,12 @@ class User():
         """
         return Document.getMostview()
 
-
+    def getEmail(self):
+        return self.email
 
 class GU(User):
     def __init__(self, email):
         User.__init__(self, email)
-
-
 
     def apply(self, name, techInterests):
         """
@@ -74,15 +75,15 @@ class GU(User):
             return 1
         elif DB.getApplDecision(self.email) == 'Denied':
             return -1
-        else:   #approved
+        else:  # approved
             return 2
 
     def GUpromotion(self, psd):
-        Account.GUpromotion(self.email,psd)
+        Account.GUpromotion(self.email, psd)
 
 
 class OU(User):
-    def __init__(self,email):
+    def __init__(self, email):
         User.__init__(self, email)
 
     def listallfiles(self):
@@ -100,11 +101,26 @@ class OU(User):
         else:
             return "File is locked, save unsuccessful"
 
-    def setPermission(self, DocID, permission):
+    def setPermission(self, filename, permissionINT):
         """each document default permission is private"""
-        pass
+        """
+            permission: 1: public 2: restrict 3: shared 4: private
+        """
 
-    def invitation(self, email):#also need ability to deny or cancel a invitation.
+        if permissionINT == 1:
+            permission = "public"
+        elif permissionINT == 2:
+            permission = "restrict"
+        elif permissionINT == 3:
+            permission = "shared"
+        elif permissionINT == 4:
+            permission = "private"
+        else:
+            return False
+
+        Document.setPermission(self.email, filename, permission)
+
+    def invitation(self, email):  # also need ability to deny or cancel a invitation.
         pass
 
     def sentInvitation(self, email):
@@ -121,7 +137,6 @@ class OU(User):
 
         return Document.isFileLocked(self.email, filename)
 
-
     def ActionRestrict(self):
         pass
         # When the OU has been reported of using taboo word, all the activity under OU
@@ -129,13 +144,13 @@ class OU(User):
 
     def Report(self):
         pass
-        #report other OU's update to onwer
-        #report onwer to SU
+        # report other OU's update to onwer
+        # report onwer to SU
 
     def search(self):
         pass
-        #search file by keyword
-        #search other user by name or info
+        # search file by keyword
+        # search other user by name or info
 
 
 class SU(OU):
@@ -165,8 +180,6 @@ class SU(OU):
         else:
             return "Decision input error"
 
-
-
     def getSuggestTaboo(self):
         """
         :return: Return the suggested Taboo word in dictionary.
@@ -188,7 +201,6 @@ class SU(OU):
         """
         return Taboo.deleteTaboo(listofwords)
 
-
     def addTaboo(self, listoftaboo):
         """
 
@@ -198,10 +210,13 @@ class SU(OU):
         if Taboo.addTaboo(listoftaboo):
             return True
 
-    def complain(self,DocID):
+    def complain(self, DocID):
         """TODO: dont know what is this"""
         pass
 
+
+
 if __name__ == "__main__":
-    newuser = OU('test')
-    print(newuser.mostPopular())
+    newuser = OU('viewtest')
+    newuser.openDoc('viewtest','fafa','')
+    #post()

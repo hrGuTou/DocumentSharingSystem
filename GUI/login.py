@@ -7,6 +7,7 @@ import Control
 class Login(QtWidgets.QWidget):
     switch_window = QtCore.pyqtSignal()
 
+
     def __init__(self):
         QtWidgets.QWidget.__init__(self)
         self.setWindowTitle('Login Page')
@@ -26,6 +27,7 @@ class Login(QtWidgets.QWidget):
         self.login_button.clicked.connect(self.login_event)
         #######################################################################
         self.signup_button = QtWidgets.QPushButton(self)
+        self.signup_button.setDefault(True)
         self.signup_button.setGeometry(QtCore.QRect(200, 390, 93, 31))
         #########################3 Signup button event ########################
         self.signup_button.clicked.connect(self.signup_event)
@@ -72,37 +74,61 @@ class Login(QtWidgets.QWidget):
 
         email = self.email_field.text()
         password = self.password_field.text()
-        status = Control.signIn(email,password)
+
 
         #============================================
 
-        if status == -1:
-            em = QtWidgets.QMessageBox()
-            em.setIcon(QtWidgets.QMessageBox.Warning)
-            em.setText("Account not found, Please create an account")
-            em.setStandardButtons(QtWidgets.QMessageBox.Ok)
-            em.exec_()
-            self.signup_event()
+        # if user didn't enter password or email
+        if email=='':
+             em = QtWidgets.QMessageBox()
+             em.setIcon(QtWidgets.QMessageBox.Warning)
+             em.setText("Please enter username and/or password!")
+             em.setStandardButtons(QtWidgets.QMessageBox.Ok)
+             em.exec_()
+             self.email_field.setText("")
+             self.password_field.setText("")
 
-        # correct users
-        elif status == 1:
-            print('here')
-            self.isIn_event()   #!ISSUE
+        else:
+            status = Control.signIn(email, password)
+        # user is not exist
+            if status == -1:
+                em = QtWidgets.QMessageBox()
+                em.setIcon(QtWidgets.QMessageBox.Warning)
+                em.setText("Account not found, Please create an account")
+                em.setStandardButtons(QtWidgets.QMessageBox.Ok)
+                em.exec_()
+                self.switch_window.emit()
 
-        # already login
-        elif status == 2:
-            em = QtWidgets.QMessageBox()
-            em.setIcon(QtWidgets.QMessageBox.Warning)
-            em.setText("Already login!")
-            em.setStandardButtons(QtWidgets.QMessageBox.Ok)
-            em.exec_()
 
-        else: # THIS RETURN 3, LAUNCH GUEST UI
-            print("HERE ADD GUEST UI")
+            # correct users
+            elif status == 1:
+                print('here')
+                self.switch_window.emit()
+                em = QtWidgets.QMessageBox()
+                em.setText("Welcome")
+                em.setStandardButtons(QtWidgets.QMessageBox.Ok)
+                em.exec_()
+                self.switch_window.emit()
+            #++++++++++++++++++++++++++++++++++++++++
+            #           welcome弹窗按了OK后就可以关闭login窗口了
+            #+++++++++++++++++++++++++++++++++++++++++
+
+
+            # already login
+            elif status == 2:
+                em = QtWidgets.QMessageBox()
+                em.setIcon(QtWidgets.QMessageBox.Warning)
+                em.setText("Already login!")
+                em.setStandardButtons(QtWidgets.QMessageBox.Ok)
+                em.exec_()
+                self.switch_window.emit()
+
+
+            else: # THIS RETURN 3, LAUNCH GUEST UI
+                print("HERE ADD GUEST UI")
+                page_status = 3
+
 
     def signup_event(self):
         self.switch_window.emit()
-        return -1
-
-    def isIn(self):
-        return 1
+        print("sign up is pressed")

@@ -92,7 +92,7 @@ def promoteToSU(email):
     return True
 
 
-def createGuest(email, password):
+def createGuest(email, password, name, techInterest):
     """
         For GU
     :param email:
@@ -100,7 +100,7 @@ def createGuest(email, password):
     :return:
     """
     if not DB.checkUserExists(email):
-        DB.addUser(email, password, '2')  # 2 for GU
+        DB.addUser(email, password, '2', name, techInterest)  # 2 for GU
         return True
 
 

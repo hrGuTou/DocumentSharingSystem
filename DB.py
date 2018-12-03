@@ -1,8 +1,7 @@
 from firebase_admin import db
-from Firebase_cred.Firebase import initial
-from time import strftime, localtime
+from Firebase_cred import Firebase
 
-initial()
+Firebase.initial()
 
 root = db.reference()
 tabooWord = root.child('Taboo_word')
@@ -36,7 +35,7 @@ def addUser(email, psd, userType, name, techInterest):
             'Password': psd,
             'User_type': userType,
             'Logged_in': False,
-            'Name': name,
+            'Name': name
         })
 
         for interest in techInterest:
@@ -198,4 +197,4 @@ def getApplDecision(email):
 
 
 if __name__ == '__main__':
-    print(getApplDecision('guest'))
+    print(SUexists())

@@ -1,6 +1,5 @@
 import DB
 
-
 #For SU
 "================================================="
 
@@ -20,8 +19,11 @@ def addTaboo(listoftaboo):
 def getTaboo():
     try:
         listoftaboo = DB.tabooWord.get()
-        listoftaboo.pop(0)
-        return listoftaboo
+        result =[]
+        for key in listoftaboo:
+            result.append(listoftaboo[key])
+
+        return result
 
     except Exception as e:
         print("getTaboo()")
@@ -82,4 +84,4 @@ def deleteSuggestTaboo(email, listofword):
 
 
 if __name__ == '__main__':
-    getSuggestedTaboo()
+    print(getTaboo())
