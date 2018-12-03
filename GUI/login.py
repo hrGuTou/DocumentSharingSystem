@@ -10,6 +10,7 @@ import sys
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import QSize
 from PyQt5.QtGui import QImage, QPalette, QBrush
+import User
 
 import Control
 import DB
@@ -133,8 +134,12 @@ class Ui_Dialog(QtWidgets.QWidget):
             em.exec_()
             Dialog.close()
             self.mainwinodw.exec_()
+            user = User.OU(email)
+
+
             Control.signOut(self.email_field.text())
-            print("it is closed now")
+            #===== USER object
+
 
 
         # already login

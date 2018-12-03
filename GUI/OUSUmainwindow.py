@@ -8,17 +8,26 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QDialog
-import Control, DB
+import User, DB
 
 class OUSU_mainwindow_Dialog(QDialog):
     def setupUi(self, Dialog,email):
         QtWidgets.QWidget.__init__(self)
+
+        userType = DB.currentUserGroup(email)
+
+        if userType == 1:
+            self.userObject = User.OU(email)  ######## object
+        else:
+            self.userObject = User.SU(email)  ######## object
+
+
         Dialog.setObjectName("Dialog")
         Dialog.resize(792, 563)
         Dialog.setStyleSheet("QDialog {background-image: url(images/ou_su_image.JPG)\n"
 "}")
         self.welcome_label = QtWidgets.QLabel(Dialog)
-        self.welcome_label.setGeometry(QtCore.QRect(30, 20, 91, 16))
+        self.welcome_label.setGeometry(QtCore.QRect(30, 20, 181, 31))
         self.welcome_label.setStyleSheet("#welcome_label{\n"
 "    color: purple\n"
 "}")
@@ -34,6 +43,9 @@ class OUSU_mainwindow_Dialog(QDialog):
         self.listWidget = QtWidgets.QListWidget(Dialog)
         self.listWidget.setGeometry(QtCore.QRect(-5, 141, 811, 421))
         self.listWidget.setObjectName("listWidget")
+        self.addItem()
+
+
         self.horizontalLayoutWidget = QtWidgets.QWidget(Dialog)
         self.horizontalLayoutWidget.setGeometry(QtCore.QRect(430, 40, 341, 83))
         self.horizontalLayoutWidget.setObjectName("horizontalLayoutWidget")
@@ -77,6 +89,26 @@ class OUSU_mainwindow_Dialog(QDialog):
 
     def manage_event(self):
         print("manage button is clicked")
+
+    def addItem(self):
+        self.listWidget.addItem("New Document")
+
+        listofFile = self.userObject.listallfiles()
+        if listofFile == 0:
+            listofFile = self.userObject.mostPopular()
+            # got the list of tuples
+
+
+        else:
+            for file in listofFile:
+                self.listWidget.addItem(file)
+
+
+        ##if click New Document, call editor
+
+
+    #def clickList(self):
+
 
 if __name__ == "__main__":
     import sys
