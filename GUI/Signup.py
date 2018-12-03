@@ -109,7 +109,6 @@ class Signup_Dialog(QtWidgets.QWidget):
         #=============================================
         print("this is the value from control: ", Control.signUp(email, password, name, techInterest))
         if (password == confirm):
-            print("they are the same")
             print("this is the value from control inside of if: ", Control.signUp(email, password, name, techInterest))
             # sign up successful
             if Control.signUp(email, password, name, techInterest) == 1:
@@ -155,4 +154,3 @@ if __name__ == "__main__":
     ui.setupUi(Dialog)
     Dialog.show()
     sys.exit(app.exec_())
-

@@ -13,8 +13,8 @@ from PyQt5.QtGui import QImage, QPalette, QBrush
 
 import Control
 import DB
-from GUI.signup_1 import Signup_Dialog
-from GUI.mainwindow_1 import Mainwindow_Dialog
+from GUI.signup import Signup_Dialog
+from GUI.OUSUmainwindow import OUSU_mainwindow_Dialog
 
 
 class Ui_Dialog(QtWidgets.QWidget):
@@ -101,10 +101,12 @@ class Ui_Dialog(QtWidgets.QWidget):
         status = Control.signIn(email,password)
 
         #============================================
-        if (not email) or (not password):
+
+        print("this is status: ", status)
+        if (not email):
             em = QtWidgets.QMessageBox()
             em.setIcon(QtWidgets.QMessageBox.Warning)
-            em.setText("Please enter username and/or password!")
+            em.setText("Please enter email！")
             em.setStandardButtons(QtWidgets.QMessageBox.Ok)
             em.exec_()
             self.email_field.setText("")
@@ -123,7 +125,7 @@ class Ui_Dialog(QtWidgets.QWidget):
         elif status == 1:
             print('login login')
             self.mainwinodw = QtWidgets.QDialog()
-            self.ui = Mainwindow_Dialog()
+            self.ui = OUSU_mainwindow_Dialog()
             self.ui.setupUi(self.mainwinodw, self.email_field.text())
             em = QtWidgets.QMessageBox()
             em.setText("Welcome, "+ self.email_field.text())
@@ -146,6 +148,7 @@ class Ui_Dialog(QtWidgets.QWidget):
         else: # THIS RETURN 3, LAUNCH GUEST UI
             print("HERE ADD GUEST UI")
 
+
     def signup_event(self):
         print("sign up button is clicked")
         Dialog.close()
@@ -167,4 +170,3 @@ if __name__ == "__main__":
     ui.setupUi(Dialog)
     Dialog.show()
     sys.exit(app.exec_())
-
