@@ -107,11 +107,14 @@ class Signup_Dialog(QtWidgets.QWidget):
         print(name)
         print(techInterest)
         #=============================================
-        print("this is the value from control: ", Control.signUp(email, password, name, techInterest))
+        #print("this is the value from control: ", Control.signUp(email, password, name, techInterest))
         if (password == confirm):
-            print("this is the value from control inside of if: ", Control.signUp(email, password, name, techInterest))
+            #print("this is the value from control inside of if: ", Control.signUp(email, password, name, techInterest))
             # sign up successful
-            if Control.signUp(email, password, name, techInterest) == 1:
+
+            status = Control.signUp(email, password, name, techInterest)
+
+            if status == 1:
                 em = QtWidgets.QMessageBox()
                 em.setText("Sign Up Successfully")
                 em.setStandardButtons(QtWidgets.QMessageBox.Ok)
@@ -119,7 +122,7 @@ class Signup_Dialog(QtWidgets.QWidget):
 
 
             # guest user registered
-            elif Control.signUp(email, password, name, techInterest) == 0:
+            elif status == 0:
                 em = QtWidgets.QMessageBox()
                 em.setText("Guest User Registered")
                 em.setStandardButtons(QtWidgets.QMessageBox.Ok)

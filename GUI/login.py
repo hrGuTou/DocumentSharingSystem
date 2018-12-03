@@ -13,7 +13,7 @@ from PyQt5.QtGui import QImage, QPalette, QBrush
 
 import Control
 import DB
-from GUI.signup import Signup_Dialog
+from GUI.Signup import Signup_Dialog
 from GUI.OUSUmainwindow import OUSU_mainwindow_Dialog
 
 
