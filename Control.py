@@ -44,7 +44,7 @@ def signUp(email, password, name, techInterest):
     :return:
     """
     if password == "":
-        if Account.createGuest(email, password):
+        if Account.createGuest(email, password, name, techInterest):
             return 0
 
     if Account.createAcc(email, password, name, techInterest):

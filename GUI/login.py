@@ -1,36 +1,60 @@
-from PyQt5 import QtCore, QtWidgets
+# -*- coding: utf-8 -*-
+
+# Form implementation generated from reading ui file 'login.ui'
+#
+# Created by: PyQt5 UI code generator 5.11.3
+#
+# WARNING! All changes made in this file will be lost!
+
+import sys
+from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import QSize
 from PyQt5.QtGui import QImage, QPalette, QBrush
+
 import Control
+import DB
+from GUI.signup_1 import Signup_Dialog
+from GUI.mainwindow_1 import Mainwindow_Dialog
 
 
-class Login(QtWidgets.QWidget):
-    switch_window = QtCore.pyqtSignal()
-
-    def __init__(self):
+class Ui_Dialog(QtWidgets.QWidget):
+    def setupUi(self, Dialog):
         QtWidgets.QWidget.__init__(self)
-        self.setWindowTitle('Login Page')
+        Dialog.setObjectName("Dialog")
+        Dialog.resize(605, 458)
+        Dialog.setMinimumSize(QtCore.QSize(605, 458))
+        Dialog.setMaximumSize(QtCore.QSize(605, 458))
+        Dialog.setBaseSize(QtCore.QSize(605, 358))
+        Dialog.setStyleSheet("QDialog{\n"
+"    background-image: url(images/login_image.jpeg)\n"
+"}\n"
+"QPushButton{\n"
+"    background-color:rgb(255, 255, 255)\n"
+"    border: none;\n"
+"}")
+        Dialog.setSizeGripEnabled(False)
+        Dialog.setWindowTitle('Login Page')
         oImage = QImage("images/login_image.jpeg")
         sImage = oImage.scaled(QSize(605, 458))  # resize Image to widgets size
         palette = QPalette()
         palette.setBrush(10, QBrush(sImage))  # 10 = Windowrole
-        self.setPalette(palette)
-        self.resize(605, 458)
-        self.setMinimumSize(QtCore.QSize(605, 458))
-        self.setMaximumSize(QtCore.QSize(605, 458))
-        self.setBaseSize(QtCore.QSize(605, 358))
+        Dialog.setPalette(palette)
+        Dialog.resize(605, 458)
+        Dialog.setMinimumSize(QtCore.QSize(605, 458))
+        Dialog.setMaximumSize(QtCore.QSize(605, 458))
+        Dialog.setBaseSize(QtCore.QSize(605, 358))
 
-        self.login_button = QtWidgets.QPushButton(self)
+        self.login_button = QtWidgets.QPushButton(Dialog)
         self.login_button.setGeometry(QtCore.QRect(300, 390, 93, 28))
         #########################3 Login button event ########################
         self.login_button.clicked.connect(self.login_event)
         #######################################################################
-        self.signup_button = QtWidgets.QPushButton(self)
+        self.signup_button = QtWidgets.QPushButton(Dialog)
         self.signup_button.setGeometry(QtCore.QRect(200, 390, 93, 31))
         #########################3 Signup button event ########################
         self.signup_button.clicked.connect(self.signup_event)
         #######################################################################
-        self.formLayoutWidget = QtWidgets.QWidget(self)
+        self.formLayoutWidget = QtWidgets.QWidget(Dialog)
         self.formLayoutWidget.setGeometry(QtCore.QRect(140, 300, 291, 81))
         self.formLayoutWidget.setObjectName("formLayoutWidget")
         self.formLayout = QtWidgets.QFormLayout(self.formLayoutWidget)
@@ -53,9 +77,10 @@ class Login(QtWidgets.QWidget):
         self.label = QtWidgets.QLabel(self.formLayoutWidget)
         self.label.setObjectName("label")
         self.formLayout.setWidget(1, QtWidgets.QFormLayout.LabelRole, self.label)
+        self.retranslateUi(Dialog)
+        QtCore.QMetaObject.connectSlotsByName(Dialog)
 
-        self.retranslateUi(self)
-        QtCore.QMetaObject.connectSlotsByName(self)
+    page_status = 0
 
     def retranslateUi(self, Dialog):
         _translate = QtCore.QCoreApplication.translate
@@ -65,6 +90,7 @@ class Login(QtWidgets.QWidget):
         self.label_2.setText(_translate("Dialog", "Email:"))
         self.label.setText(_translate("Dialog", "Password:"))
 
+    # event handler for login button
     def login_event(self):
         print("login is pressed")
 
@@ -75,8 +101,16 @@ class Login(QtWidgets.QWidget):
         status = Control.signIn(email,password)
 
         #============================================
+        if (not email) or (not password):
+            em = QtWidgets.QMessageBox()
+            em.setIcon(QtWidgets.QMessageBox.Warning)
+            em.setText("Please enter username and/or password!")
+            em.setStandardButtons(QtWidgets.QMessageBox.Ok)
+            em.exec_()
+            self.email_field.setText("")
+            self.password_field.setText("")
 
-        if status == -1:
+        elif status == -1:
             em = QtWidgets.QMessageBox()
             em.setIcon(QtWidgets.QMessageBox.Warning)
             em.setText("Account not found, Please create an account")
@@ -84,10 +118,22 @@ class Login(QtWidgets.QWidget):
             em.exec_()
             self.signup_event()
 
+
         # correct users
         elif status == 1:
-            print('here')
-            self.isIn_event()   #!ISSUE
+            print('login login')
+            self.mainwinodw = QtWidgets.QDialog()
+            self.ui = Mainwindow_Dialog()
+            self.ui.setupUi(self.mainwinodw, self.email_field.text())
+            em = QtWidgets.QMessageBox()
+            em.setText("Welcome, "+ self.email_field.text())
+            em.setStandardButtons(QtWidgets.QMessageBox.Ok)
+            em.exec_()
+            Dialog.close()
+            self.mainwinodw.exec_()
+            Control.signOut(self.email_field.text())
+            print("it is closed now")
+
 
         # already login
         elif status == 2:
@@ -101,8 +147,24 @@ class Login(QtWidgets.QWidget):
             print("HERE ADD GUEST UI")
 
     def signup_event(self):
-        self.switch_window.emit()
-        return -1
+        print("sign up button is clicked")
+        Dialog.close()
+        self.signUpWindow = QtWidgets.QDialog()
+        self.ui = Signup_Dialog()
+        self.ui.setupUi(self.signUpWindow)
+        self.signUpWindow.exec_()
+        self.email_field.setText("")
+        self.password_field.setText("")
+        Dialog.show()
 
-    def isIn(self):
-        return 1
+
+
+if __name__ == "__main__":
+
+    app = QtWidgets.QApplication(sys.argv)
+    Dialog = QtWidgets.QDialog()
+    ui = Ui_Dialog()
+    ui.setupUi(Dialog)
+    Dialog.show()
+    sys.exit(app.exec_())
+
