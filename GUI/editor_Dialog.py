@@ -50,10 +50,21 @@ class Ui_Dialog(object):
         self.History.setText(_translate("Dialog", "History"))
         self.label.setText(_translate("Dialog", "File Name"))
 
-    def uploadDoc(self, email):
+    def uploadDoc(self, email, newFile):
         #### RUN AT EXIT ####
+        """
+
+        :param email:
+        :param newFile: True for new file, False for exist file
+        :return:
+        """
         fileName = self.lineEdit.text()
         fileName = fileName.replace(" ","_")
+
+        if newFile:
+            checkfileExist = Document.listallfiles(email)
+            while fileName in checkfileExist:
+                print("display warning")
 
         modified = Path("../cacheModified")
         original = Path("../cache")

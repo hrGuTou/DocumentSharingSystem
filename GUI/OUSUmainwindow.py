@@ -109,7 +109,7 @@ class OUSU_mainwindow_Dialog(QDialog):
             self.editor.setupUi(self.editorWindow)
             self.editor.setFileName(clickedTarget)
             self.editorWindow.exec_()
-            self.editor.uploadDoc(self.email)
+            self.editor.uploadDoc(self.email, False)
         else:
             ### This will create a new document ###
             editor_Dialog.loadBE()
@@ -118,7 +118,7 @@ class OUSU_mainwindow_Dialog(QDialog):
             self.editor = UI_Dialog_editor()
             self.editor.setupUi(self.editorWindow)
             self.editorWindow.exec_()
-            self.editor.uploadDoc(self.email)
+            self.editor.uploadDoc(self.email, True)#true because it is new file
 
     def manage_event(self):
         print("manage button is clicked")
