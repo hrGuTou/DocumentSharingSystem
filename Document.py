@@ -115,10 +115,10 @@ def openfile(email, fileOwner, filename, version):
         url = "https://firebasestorage.googleapis.com/v0/b/llhc-db662.appspot.com/o/savedocs%2F" + DB.removeIllegalChar(
             email) + "%2F" + filename + "%2F" + version + "?alt=media"
 
-    urllib.request.urlretrieve(url, "cache")
-    file = open('cache', "r")
-    fileout = file.read()
-    file.close()
+    urllib.request.urlretrieve(url, "../cache")
+    #file = open('../cache', "r")
+    #fileout = file.read()
+    #file.close()
 
     if not email == fileOwner:
         ref = DB.user.child(DB.removeIllegalChar(email)).child("View_counter")
@@ -130,7 +130,7 @@ def openfile(email, fileOwner, filename, version):
             }
         })
 
-    return fileout
+    #return fileout
 
 
 def isFileLocked(email, filename):
@@ -221,4 +221,6 @@ if __name__ == '__main__':
     #print(getMostview())
     #print(listallfiles('guest'))
     #setPermission('viewtest','test1','public')
-    getPermissionFiles('public')
+    #print(getMostview())
+    #saveDoc('hrgutou@gmail.com','test.txt','test2')
+    pass

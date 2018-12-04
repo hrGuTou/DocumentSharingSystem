@@ -2,14 +2,13 @@ import DB
 import Document
 import Taboo
 import Account
-import requests
 
 """
     Main class for User, subclasses will be SU, OU, and GU.
 """
 
 
-class User():
+class User:
     def __init__(self, email):
         self.email = email
 

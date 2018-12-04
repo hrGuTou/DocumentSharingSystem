@@ -134,7 +134,6 @@ class Ui_Dialog(QtWidgets.QWidget):
             em.exec_()
             Dialog.close()
             self.mainwinodw.exec_()
-            user = User.OU(email)
 
 
             Control.signOut(self.email_field.text())

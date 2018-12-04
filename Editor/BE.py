@@ -1,11 +1,10 @@
 import json
+from pathlib import Path
 
 import socketio
 import eventlet
 from flask import Flask, render_template, request
 import Taboo
-from GUI import editor
-
 
 
 def backend():
@@ -14,9 +13,12 @@ def backend():
 
 
     def readFile():
-        f = open("../cache", "r")
-        result = f.read()
-        return result
+        filePath = Path('../cache')
+
+        if filePath.is_file():
+            f = open("../cache", "r")
+            result = f.read()
+            return result
 
     def writeFile(data):
         f = open("../cacheModified", "w")

@@ -5,15 +5,23 @@
 # Created by: PyQt5 UI code generator 5.11.3
 #
 # WARNING! All changes made in this file will be lost!
+import time
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QDialog
 import User, DB
+#from GUI.editor import Ui_MainWindow as EDITOR
+from GUI import editor_Dialog
+from GUI.editor_Dialog import Ui_Dialog as UI_Dialog_editor
+
+
+import atexit
 
 class OUSU_mainwindow_Dialog(QDialog):
-    def setupUi(self, Dialog,email):
+    def setupUi(self, Dialog, email):
         QtWidgets.QWidget.__init__(self)
 
+        self.email = email
         userType = DB.currentUserGroup(email)
 
         if userType == 1:
@@ -72,8 +80,9 @@ class OUSU_mainwindow_Dialog(QDialog):
         else:
             if DB.currentUserGroup(email) == 0:
                 self.manage_button.setVisible(True)
-        #########################3 Signup button event ########################
+        #########################3  button event ########################
         self.manage_button.clicked.connect(self.manage_event)
+        self.listWidget.itemActivated.connect(self.listClickListener)
         #######################################################################
 
 
@@ -86,6 +95,30 @@ class OUSU_mainwindow_Dialog(QDialog):
         Dialog.setWindowTitle(_translate("Dialog", "Dialog"))
         self.welcome_label.setText(_translate("Dialog", "<html><head/><body><p><span style=\" font-size:18pt; font-weight:600;\">Welcome, </span></p></body></html>"))
         self.search_button.setText(_translate("Dialog", "Search"))
+
+    def listClickListener(self,item):
+        clickedTarget = item.text()
+        if not clickedTarget == "New Document":
+            clickedTarget = clickedTarget.replace(" ","_")
+            self.userObject.openDoc(self.email, clickedTarget, "")
+            #this will store a cache file in disk for BE to read
+            editor_Dialog.loadBE()
+            time.sleep(1)
+            self.editorWindow = QtWidgets.QDialog()
+            self.editor = UI_Dialog_editor()
+            self.editor.setupUi(self.editorWindow)
+            self.editor.setFileName(clickedTarget)
+            self.editorWindow.exec_()
+            self.editor.uploadDoc(self.email)
+        else:
+            ### This will create a new document ###
+            editor_Dialog.loadBE()
+            time.sleep(1)
+            self.editorWindow = QtWidgets.QDialog()
+            self.editor = UI_Dialog_editor()
+            self.editor.setupUi(self.editorWindow)
+            self.editorWindow.exec_()
+            self.editor.uploadDoc(self.email)
 
     def manage_event(self):
         print("manage button is clicked")
@@ -101,7 +134,8 @@ class OUSU_mainwindow_Dialog(QDialog):
 
         else:
             for file in listofFile:
-                self.listWidget.addItem(file)
+
+                self.listWidget.addItem(file.replace("_", " "))
 
 
         ##if click New Document, call editor
@@ -109,12 +143,13 @@ class OUSU_mainwindow_Dialog(QDialog):
 
     #def clickList(self):
 
-
+def exitEvent():
+    pass
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
     Dialog = QtWidgets.QDialog()
-    ui = Mainwindow_Dialog()
+    ui = OUSU_mainwindow_Dialog()
     ui.setupUi(Dialog)
     Dialog.show()
     sys.exit(app.exec_())
