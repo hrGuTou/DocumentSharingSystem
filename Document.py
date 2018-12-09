@@ -6,7 +6,7 @@ from collections import OrderedDict
 import DB
 
 
-def saveDoc(email, doc, fileName):
+def saveDoc(email, doc, fileName, permission):
     """
         CITED FROM https://github.com/PhantomInsights/firebase-python/blob/master/storage/README.md
         CREATOR: https://github.com/agentphantom
@@ -35,7 +35,7 @@ def saveDoc(email, doc, fileName):
             timeCode: {
                 'Name': fileName,
                 'Locked': False,
-                'Permission': 'Private'
+                'Permission': permission
             }
         })
 
@@ -175,15 +175,18 @@ def getMostview():
     :return: the three of the most viewed docs
     """
 
+
     ref = DB.root.child("View_counter")
     viewcount = ref.get()
     lst = []
-    for key, val in viewcount.items():
-        for j in val:
-            lst.append((key, j, val[j]))
+    if viewcount is not None:
+        for key, val in viewcount.items():
+            for j in val:
+                if checkFilePermission(key,j) == 'public'or checkFilePermission(key,j)=='restricted':
+                    lst.append((key, j, val[j]))
 
-    lst = sorted(lst, key=lambda tup: tup[2], reverse=True)
-    return lst[:3]
+        lst = sorted(lst, key=lambda tup: tup[2], reverse=True)
+        return lst[:3]
 
 
 def setPermission(email, filename, permission):
@@ -216,6 +219,15 @@ def getPermissionFiles(permissionType):
 
     return result
 
+def checkFilePermission(user,filename):
+    ref = DB.user.child(DB.removeIllegalChar(user)).child('Document_history').get()
+    #print(ref)
+    if ref is None:
+        return None
+    for key in ref:
+        if ref[key]['Name'] == filename:
+            return ref[key]['Permission']
+
 if __name__ == '__main__':
     # saveDoc('viewtest','test.txt','again')
     #print(getMostview())
@@ -223,4 +235,7 @@ if __name__ == '__main__':
     #setPermission('viewtest','test1','public')
     #print(getMostview())
     #saveDoc('hrgutou@gmail.com','test.txt','test2')
-    pass
+    #print(checkFilePermission('hrgutou@gmail.com','tasdft1'))
+    data = getMostview()
+    for tup in data:
+        print(tup[0])

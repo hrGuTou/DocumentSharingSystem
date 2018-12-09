@@ -14,8 +14,9 @@ import User
 
 import Control
 import DB
+from GUI.OUMainWindow import Ui_Dialog as OUSU_mainwindow_Dialog
 from GUI.Signup import Signup_Dialog
-from GUI.OUSUmainwindow import OUSU_mainwindow_Dialog
+#from GUI.OUSUmainwindow import OUSU_mainwindow_Dialog
 
 
 class Ui_Dialog(QtWidgets.QWidget):
@@ -125,6 +126,21 @@ class Ui_Dialog(QtWidgets.QWidget):
         # correct users
         elif status == 1:
             print('login login')
+
+            self.mainWindow = QtWidgets.QDialog()
+            self.ui = OUSU_mainwindow_Dialog()
+            self.ui.setupUi(self.mainWindow, self.email_field.text())
+
+
+            em = QtWidgets.QMessageBox()
+            em.setText("Welcome, " + self.email_field.text())
+            em.setStandardButtons(QtWidgets.QMessageBox.Ok)
+            em.exec_()
+            Dialog.close()
+            self.mainWindow.exec_()
+            Control.signOut(self.email_field.text())
+
+            """
             self.mainwinodw = QtWidgets.QDialog()
             self.ui = OUSU_mainwindow_Dialog()
             self.ui.setupUi(self.mainwinodw, self.email_field.text())
@@ -134,11 +150,11 @@ class Ui_Dialog(QtWidgets.QWidget):
             em.exec_()
             Dialog.close()
             self.mainwinodw.exec_()
-
+            
 
             Control.signOut(self.email_field.text())
             #===== USER object
-
+            """
 
 
         # already login

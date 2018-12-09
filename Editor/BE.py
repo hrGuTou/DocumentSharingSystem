@@ -1,4 +1,5 @@
 import json
+import os
 from pathlib import Path
 
 import socketio
@@ -14,6 +15,13 @@ def backend():
 
     def readFile():
         filePath = Path('../cache')
+        fileShare = Path('../cacheShare')
+
+        if fileShare.is_file():
+            f=open(fileShare,'r')
+            result = f.read()
+            os.remove('../cacheShare')
+            return result
 
         if filePath.is_file():
             f = open("../cache", "r")

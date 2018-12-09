@@ -196,5 +196,28 @@ def getApplDecision(email):
         print(e)
 
 
+def shareTarget(src, filename, target, link):
+    try:
+        ref = user.child(removeIllegalChar(target)).child('Invitation')
+        ref.update({
+
+            removeIllegalChar(src): {
+                'File name':filename,
+                'Link': link
+            }
+        })
+
+        return True
+    except Exception as e:
+        print(e)
+
+
+def getInvitation(email):
+    try:
+        ref = user.child(removeIllegalChar(email)).child("Invitation").get()
+        return ref
+    except Exception as e:
+        print(e)
+
 if __name__ == '__main__':
-    print(SUexists())
+    print(getInvitation('anotherOU@gmail.com'))

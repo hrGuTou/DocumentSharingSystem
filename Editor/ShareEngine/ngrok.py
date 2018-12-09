@@ -37,6 +37,14 @@ class NgrokTunnel:
         tunnel_url = j['tunnels'][1]['public_url']
         return tunnel_url
 
+    def stop(self):
+        self.p.kill()
+        print("ngrok dies")
+
+
+
+
 if __name__ == "__main__":
     ngrok = NgrokTunnel()
-    ngrok.start()
+    print(ngrok.start())
+    time.sleep(10)

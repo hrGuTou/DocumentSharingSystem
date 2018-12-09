@@ -10,13 +10,14 @@ import threading
 from pathlib import Path
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtWidgets import QMessageBox
+from GUI import shareOption
+from Editor.ShareEngine import ngrok as Tunnel
 
 import Document
 from Editor import BE
 
 class Ui_Dialog(object):
-    def setupUi(self, Dialog):
+    def setupUi(self, Dialog, email):
         Dialog.setObjectName("Dialog")
         Dialog.resize(1090, 780)
         self.gridLayout = QtWidgets.QGridLayout(Dialog)
@@ -40,8 +41,12 @@ class Ui_Dialog(object):
         self.webView.page().profile().clearHttpCache()
         self.gridLayout.addWidget(self.webView, 1, 0, 3, 2)
 
+        self.ngrok = None
+        self.email = email
         self.retranslateUi(Dialog)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
+
+        self.Share.clicked.connect(self.clickShare)
 
     def retranslateUi(self, Dialog):
         _translate = QtCore.QCoreApplication.translate
@@ -50,7 +55,19 @@ class Ui_Dialog(object):
         self.History.setText(_translate("Dialog", "History"))
         self.label.setText(_translate("Dialog", "File Name"))
 
-    def uploadDoc(self, email, newFile):
+    def clickShare(self):
+
+        self.shareOption = QtWidgets.QDialog()
+        self.ui = shareOption.Ui_shareOption()
+        filename = self.lineEdit.text()
+        self.ui.setupUi(self.shareOption, self.email, filename)
+        self.shareOption.exec_()
+
+        if self.ui.getNgrokTunnel() is not None:
+            self.ngrok = self.ui.getNgrokTunnel()
+
+
+    def uploadDoc(self, newFile):
         #### RUN AT EXIT ####
         """
 
@@ -58,19 +75,29 @@ class Ui_Dialog(object):
         :param newFile: True for new file, False for exist file
         :return:
         """
+        if self.ngrok is not None:
+            self.ngrok.stop()
+
+
         fileName = self.lineEdit.text()
         fileName = fileName.replace(" ","_")
 
         if newFile:
-            checkfileExist = Document.listallfiles(email)
-            while fileName in checkfileExist:
-                print("display warning")
+            checkfileExist = Document.listallfiles(self.email)
+            print(checkfileExist)
+            if not checkfileExist == 0:
+                if fileName in checkfileExist:
+                    print("display warning")
 
         modified = Path("../cacheModified")
         original = Path("../cache")
+        permission = Document.checkFilePermission(self.email, fileName)
+        if permission is None:
+            permission = 'private'
+
         if modified.is_file():
             print("saving doc")
-            Document.saveDoc(email, '../cacheModified', fileName)
+            Document.saveDoc(self.email, '../cacheModified', fileName, permission)
             os.remove('../cacheModified')
         else:
             if modified.is_file():
@@ -80,6 +107,7 @@ class Ui_Dialog(object):
 
 
     def setFileName(self, name):
+        self.name = name
         name = name.replace("_", " ")
         self.lineEdit.setText(name)
 

@@ -25,7 +25,7 @@ class User:
     def suggestTaboo(self, listofwords):
         Taboo.suggestTaboo(self.email, listofwords)
 
-    def getPermission(self, permissionType):
+    def getPermissionFile(self, permissionType):
         """
 
         :param permissionType: private, public, restricted, shared

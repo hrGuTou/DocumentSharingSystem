@@ -101,7 +101,7 @@ class Signup_Dialog(QtWidgets.QWidget):
         password = self.password_field.text()
         name = self.name_field.text()
         confirm = self.confirm_password_field.text()
-        techInterest = self.interest_field.text()
+        techInterest = [self.interest_field.text()]
         print(email)
         print(password)
         print(name)
