@@ -139,7 +139,7 @@ def isFileLocked(email, filename):
     return ref["Locked"]
 
 
-def changeLock(email, filename):
+def changeLock(email, filename, status):
     """
         Lock a document
     :param email:
@@ -148,25 +148,18 @@ def changeLock(email, filename):
     """
     ref = DB.user.child(DB.removeIllegalChar(email)).child("Document_history").order_by_child("Name").equal_to(
         filename).get()
-    result = []
-    for key in ref:
-        result.append(key)
 
-    if not isFileLocked(email, filename):
-        for doc in result:
-            snapshot = DB.user.child(DB.removeIllegalChar(email)).child("Document_history").child(doc)
-            snapshot.update({
-                'Locked': True
-            })
-        return True
+    if ref is not None:
+        result = []
+        for key in ref:
+            result.append(key)
 
-    else:
+
         for doc in result:
-            snapshot = DB.user.child(DB.removeIllegalChar(email)).child("Document_history").child(doc)
-            snapshot.update({
-                'Locked': False
+                snapshot = DB.user.child(DB.removeIllegalChar(email)).child("Document_history").child(doc)
+                snapshot.update({
+                    'Locked': status
             })
-        return False
 
 
 def getMostview():
@@ -236,6 +229,4 @@ if __name__ == '__main__':
     #print(getMostview())
     #saveDoc('hrgutou@gmail.com','test.txt','test2')
     #print(checkFilePermission('hrgutou@gmail.com','tasdft1'))
-    data = getMostview()
-    for tup in data:
-        print(tup[0])
+    print(isFileLocked('hrgutou@gmail.com','234'))

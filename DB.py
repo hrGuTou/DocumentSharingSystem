@@ -198,12 +198,11 @@ def getApplDecision(email):
 
 def shareTarget(src, filename, target, link):
     try:
-        ref = user.child(removeIllegalChar(target)).child('Invitation')
+        ref = user.child(removeIllegalChar(target)).child('Invitation').child(removeIllegalChar(src))
         ref.update({
+                 filename:{
+                        'Link': link
 
-            removeIllegalChar(src): {
-                'File name':filename,
-                'Link': link
             }
         })
 
@@ -219,5 +218,19 @@ def getInvitation(email):
     except Exception as e:
         print(e)
 
+def deleteInvitation(email,target,filename):
+    try:
+        ref = user.child(removeIllegalChar(email)).child('Invitation').child(removeIllegalChar(target)).child(filename)
+        ref.delete()
+    except Exception as e:
+        print(e)
+
+
+def setViewCount(views):
+    root.child('View_counter').child(removeIllegalChar('hrgutou@gmail.com')).child('234').listen(callback)
+
+def callback():
+    pass
+
 if __name__ == '__main__':
-    print(getInvitation('anotherOU@gmail.com'))
+    setViewCount('')

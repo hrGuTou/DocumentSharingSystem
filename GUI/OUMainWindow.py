@@ -130,11 +130,8 @@ class Ui_Dialog(object):
                     self.publicDoc.addItem(file.replace("_"," "))
 
 
-        if listofFile == 0:
-            listofFile = self.userObject.mostPopular()
-            # got the list of tuples
 
-        else:
+        if listofFile is not None:
             for file in listofFile:
                 self.selfDocs.addItem(file.replace("_", " "))
 
@@ -150,8 +147,8 @@ class Ui_Dialog(object):
         time.sleep(1)
         self.editorWindow = QtWidgets.QDialog()
         self.editor = UI_Dialog_editor()
-        self.editor.setupUi(self.editorWindow, self.email)
-        self.editor.setFileName(clickedTarget)
+        self.editor.setupUi(self.editorWindow, self.email, clickedTarget)
+        #self.editor.setFileName(clickedTarget)
         self.editorWindow.exec_()
         self.editor.uploadDoc(False)
 
@@ -172,7 +169,6 @@ class Ui_Dialog(object):
         self.editor.uploadDoc(True)  # true because it is new file
 
     def invite(self):
-
         self.inviteWindow = QtWidgets.QDialog()
         self.inviteW = Ui_seeInvitation()
         self.inviteW.setupUi(self.inviteWindow, self.email)
