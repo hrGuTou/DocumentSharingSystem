@@ -8,9 +8,8 @@
 import os
 import threading
 from pathlib import Path
-import requests
 from PyQt5 import QtCore, QtGui, QtWidgets
-from GUI import shareOption
+from GUI import shareOption, fileHistory
 from Editor.ShareEngine import ngrok as Tunnel
 
 import Document
@@ -55,45 +54,73 @@ class Ui_Dialog(object):
 
         self.Share.clicked.connect(self.clickShare)
         self.lockFile.clicked.connect(self.lockfile)
+        if self.filename is not "":
+            self.History.clicked.connect(self.displayHistory)
 
     def retranslateUi(self, Dialog):
         _translate = QtCore.QCoreApplication.translate
         Dialog.setWindowTitle(_translate("Dialog", "Dialog"))
         self.Share.setText(_translate("Dialog", "Share"))
+
         self.History.setText(_translate("Dialog", "History"))
         self.label.setText(_translate("Dialog", "File Name"))
-        locked = Document.isFileLocked(self.email, self.filename)
-        if locked is not None:
-            if locked:
-                self.lockFile.setText(_translate("Dialog","Unlock"))
+
+        if self.filename is not "":
+            locked = Document.isFileLocked(self.email, self.filename)
+
+            if locked is not None:
+                if locked:
+                    self.lockFile.setText(_translate("Dialog","Unlock"))
+                else:
+                    self.lockFile.setText(_translate("Dialog","Lock"))
             else:
                 self.lockFile.setText(_translate("Dialog","Lock"))
+
         else:
-            self.lockFile.setText(_translate("Dialog","Lock"))
+            self.lockFile.setText(_translate("Dialog", "Save"))
 
 
     def lockfile(self):
-        currStatus = self.lockFile.text()
-        Document.changeLock(self.email,self.filename,currStatus)
-        if currStatus == "Lock":
-            self.lockFile.setText("Unlock")
 
+        if self.lockFile.text() == 'Save':
+            if self.lineEdit.text():
+                if Path("../cacheModified").is_file():
+                    self.uploadDoc(True)
+                    self.lockFile.setText("Lock")
         else:
-            self.lockFile.setText("Lock")
+            if self.lockFile.text() == 'Lock':
+                print('lock here')
+                Document.changeLock(self.email, self.lineEdit.text(), True)
+                self.lockFile.setText("Unlock")
+            else:
+                print('unlock here')
+                Document.changeLock(self.email, self.lineEdit.text(), False)
+                self.lockFile.setText("Lock")
 
 
 
+    def displayHistory(self):
+        if self.lineEdit.text():
+            allHistory = Document.listallhistory(self.email,self.filename)
+            self.historyWindow = QtWidgets.QDialog()
+            self.history = fileHistory.Ui_fileHistory()
+            self.history.setupUi(self.historyWindow, allHistory, self.email, self.filename)
+            self.historyWindow.exec_()
+            self.webView.reload()
 
     def clickShare(self):
+        if self.lineEdit.text():
+            if not Document.listallhistory(self.email, self.lineEdit.text()):
+                Document.saveDoc(self.email,'../cacheModified', self.lineEdit.text(), 'private')
 
-        self.shareOption = QtWidgets.QDialog()
-        self.ui = shareOption.Ui_shareOption()
-        filename = self.lineEdit.text()
-        self.ui.setupUi(self.shareOption, self.email, filename)
-        self.shareOption.exec_()
+            self.shareOption = QtWidgets.QDialog()
+            self.ui = shareOption.Ui_shareOption()
+            filename = self.lineEdit.text()
+            self.ui.setupUi(self.shareOption, self.email, filename)
+            self.shareOption.exec_()
 
-        if self.ui.getNgrokTunnel() is not None:
-            self.ngrok = self.ui.getNgrokTunnel()
+            if self.ui.getNgrokTunnel() is not None:
+                self.ngrok = self.ui.getNgrokTunnel()
 
 
     def uploadDoc(self, newFile):

@@ -82,8 +82,9 @@ def listallhistory(email, filename):
             filename)
         snapshot = ref.get()
         result = []
-        for key in snapshot:
-            result.append(key)
+        if ref is not None:
+            for key in snapshot:
+                result.append(key)
 
         return result
 
@@ -106,28 +107,43 @@ def openfile(email, fileOwner, filename, version):
         :return: return the content of a file
         """
 
-    if version == "":
-        target = getLastestVersion(email, filename)
-        url = "https://firebasestorage.googleapis.com/v0/b/llhc-db662.appspot.com/o/savedocs%2F" + DB.removeIllegalChar(
-            email) + "%2F" + filename + "%2F" + target + "?alt=media"
+    print(email,fileOwner)
+    if DB.removeIllegalChar(email) == DB.removeIllegalChar(fileOwner) and not email=="":
+        if version == "":
+            target = getLastestVersion(fileOwner, filename)
+            print(target)
+            url = "https://firebasestorage.googleapis.com/v0/b/llhc-db662.appspot.com/o/savedocs%2F" + DB.removeIllegalChar(
+                email) + "%2F" + filename + "%2F" + target + "?alt=media"
+
+        else:
+            url = "https://firebasestorage.googleapis.com/v0/b/llhc-db662.appspot.com/o/savedocs%2F" + DB.removeIllegalChar(
+                email) + "%2F" + filename + "%2F" + version + "?alt=media"
+
+        urllib.request.urlretrieve(url, "../cache")
+        #file = open('../cache', "r")
+        #fileout = file.read()
+        #file.close()
 
     else:
-        url = "https://firebasestorage.googleapis.com/v0/b/llhc-db662.appspot.com/o/savedocs%2F" + DB.removeIllegalChar(
-            email) + "%2F" + filename + "%2F" + version + "?alt=media"
+        print(fileOwner, filename)
+        if version == "":
+            target = getLastestVersion(fileOwner, filename)
+            print(target)
+            url = "https://firebasestorage.googleapis.com/v0/b/llhc-db662.appspot.com/o/savedocs%2F" + DB.removeIllegalChar(
+                fileOwner) + "%2F" + filename + "%2F" + target + "?alt=media"
 
-    urllib.request.urlretrieve(url, "../cache")
-    #file = open('../cache', "r")
-    #fileout = file.read()
-    #file.close()
+        else:
+            url = "https://firebasestorage.googleapis.com/v0/b/llhc-db662.appspot.com/o/savedocs%2F" + DB.removeIllegalChar(
+                fileOwner) + "%2F" + filename + "%2F" + version + "?alt=media"
 
-    if not email == fileOwner:
-        ref = DB.user.child(DB.removeIllegalChar(email)).child("View_counter")
+        urllib.request.urlretrieve(url, "../cache")
+
+        ref = DB.root.child("View_counter")
         getref = ref.get()
-        views = getref[filename]['Views'] + 1
-        ref.update({
-            filename: {
-                'Views': views
-            }
+        print(getref)
+        views = getref[fileOwner][filename] + 1
+        ref.child(fileOwner).update({
+            filename: views
         })
 
     #return fileout
@@ -138,6 +154,23 @@ def isFileLocked(email, filename):
     ref = DB.user.child(DB.removeIllegalChar(email)).child("Document_history").child(docID).get()
     return ref["Locked"]
 
+def getAllLockFile():
+    alluser = DB.allUsers()
+    result = {}
+    files = []
+    if alluser:
+        for user in alluser:
+            userFile = listallfiles(user)
+            if userFile:
+                for eachFile in userFile:
+                    if isFileLocked(user, eachFile):
+                        files.append(eachFile)
+                if files:
+                    result.update({user: files})
+                    files = []
+
+    return result
+
 
 def changeLock(email, filename, status):
     """
@@ -146,6 +179,7 @@ def changeLock(email, filename, status):
     :param filename:
     :return:
     """
+    print('called')
     ref = DB.user.child(DB.removeIllegalChar(email)).child("Document_history").order_by_child("Name").equal_to(
         filename).get()
 
@@ -221,6 +255,21 @@ def checkFilePermission(user,filename):
         if ref[key]['Name'] == filename:
             return ref[key]['Permission']
 
+def notPrivateFile():
+    ref = DB.user.get()
+
+    result = {}
+
+    for key in ref:
+        if "Document_history" in ref[key]:
+            qry = []
+            for timecode in ref[key]['Document_history']:
+                if ref[key]['Document_history'][timecode]['Permission'] == 'public' or ref[key]['Document_history'][timecode]['Permission']=='restricted':
+                    qry.append(ref[key]['Document_history'][timecode]['Name'])
+            result[key] = list(OrderedDict.fromkeys(qry))
+
+    return result
+
 if __name__ == '__main__':
     # saveDoc('viewtest','test.txt','again')
     #print(getMostview())
@@ -229,4 +278,4 @@ if __name__ == '__main__':
     #print(getMostview())
     #saveDoc('hrgutou@gmail.com','test.txt','test2')
     #print(checkFilePermission('hrgutou@gmail.com','tasdft1'))
-    print(isFileLocked('hrgutou@gmail.com','234'))
+    getAllLockFile()

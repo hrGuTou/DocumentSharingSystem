@@ -71,7 +71,6 @@ class Ui_seeInvitation(object):
                     delete = QtWidgets.QPushButton()
                     delete.setText("Delete")
                     rows = self.tableWidget.rowCount()
-                    rows = self.tableWidget.rowCount()
                     self.tableWidget.insertRow(rows)
                     self.tableWidget.setItem(rows,0, QtWidgets.QTableWidgetItem(key))
                     self.tableWidget.setItem(rows,1, QtWidgets.QTableWidgetItem(file))

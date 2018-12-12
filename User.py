@@ -13,6 +13,7 @@ class User:
         self.email = email
 
     def openDoc(self, fileOwner, filename, version):
+        print(self.email, fileOwner, filename,version)
         Document.openfile(self.email, fileOwner, filename, version)
 
     def retriveOldVer(self, filename):

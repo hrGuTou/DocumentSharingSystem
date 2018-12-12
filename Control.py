@@ -92,4 +92,4 @@ def manage(email):
 
 
 if __name__ == '__main__':
-    print(signUp('testababa123','','guest',['computer','sleep']))
+    signIn('csc322','abc')

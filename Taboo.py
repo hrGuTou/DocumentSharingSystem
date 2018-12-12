@@ -3,10 +3,10 @@ import DB
 #For SU
 "================================================="
 
-def addTaboo(listoftaboo):
+def addTaboo(word):
     try:
-        for word in listoftaboo:
-            DB.tabooWord.update({
+
+        DB.tabooWord.update({
                 DB.tolower(word): DB.tolower(word)
             })
 
@@ -30,11 +30,11 @@ def getTaboo():
         print(e)
 
 
-def deleteTaboo(listofword):
+def deleteTaboo(word):
     try:
         ref = DB.tabooWord
-        for word in listofword:
-           ref.child(DB.tolower(word)).delete()
+
+        ref.child(DB.tolower(word)).delete()
 
         return True
 
@@ -44,12 +44,12 @@ def deleteTaboo(listofword):
 
 def getSuggestedTaboo():
     try:
-        ref = DB.user.get()
-        taboo = {}
-        for key in ref:
-            if "Suggest_taboo" in ref[key]:
-                taboo[key] = ref[key]['Suggest_taboo']
-
+        ref = DB.root.child('Suggest_taboo').get()
+        taboo = []
+        if ref is not None:
+            for key in ref:
+                taboo.append(ref[key])
+        print(taboo)
         return taboo
     except Exception as e:
         print("getSuggestedTaboo")
@@ -57,9 +57,9 @@ def getSuggestedTaboo():
 
 "================================================"
 
-def suggestTaboo(email, listofword):
+def suggestTaboo(listofword):
     try:
-        ref = DB.user.child(DB.removeIllegalChar(email)).child('Suggest_taboo')
+        ref = DB.root.child('Suggest_taboo')
         for word in listofword:
             ref.update({
                 DB.tolower(word):DB.tolower(word)
@@ -69,12 +69,11 @@ def suggestTaboo(email, listofword):
         print("suggestTaboo()")
         print(e)
 
-def deleteSuggestTaboo(email, listofword):
+def deleteSuggestTaboo(word):
     try:
-        ref = DB.user.child(DB.removeIllegalChar(email)).child('Suggest_taboo')
+        ref = DB.suggestTaboo
 
-        for word in listofword:
-            ref.child(DB.tolower(word)).delete()
+        ref.child(DB.tolower(word)).delete()
 
         return True
 
@@ -82,6 +81,17 @@ def deleteSuggestTaboo(email, listofword):
         print("deleteSuggestTaboo")
         print(e)
 
+def deleteAllTaboo():
+    try:
+        DB.tabooWord.delete()
 
+    except Exception as e:
+        print(e)
+
+def deleteAllSuggest():
+    try:
+        DB.suggestTaboo.delete()
+    except Exception as e:
+        print(e)
 if __name__ == '__main__':
-    print(getTaboo())
+    deleteTaboo('7')

@@ -13,7 +13,7 @@ import threading
 import Document
 import DB
 class Ui_shareDoc(object):
-    def setupUi(self, shareDoc,url, original, filename):
+    def setupUi(self, shareDoc, url, original, filename):
         self.url = url
         self.original = original
         self.filename = filename
@@ -26,7 +26,6 @@ class Ui_shareDoc(object):
         self.webView.setUrl(QtCore.QUrl(self.url))
         self.webView.setObjectName("webView")
         self.webView.page().profile().clearHttpCache()
-
         self.gridLayout.addWidget(self.webView, 1, 0, 3, 2)
         self.suggestTaboo = QtWidgets.QPushButton(shareDoc)
         self.suggestTaboo.setObjectName("suggestTaboo")

@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Dialog</class>
+ <widget class="QDialog" name="Dialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>917</width>
+    <height>618</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Dialog</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QDialog{
+    background-image: url(/Users/kappa/Desktop/python/DocumentSharingSystem/GUI/images/ou_su_image.JPG)
+}</string>
+  </property>
+  <widget class="QLabel" name="welcome_label">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>0</y>
+     <width>151</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>26</pointsize>
+     <weight>75</weight>
+     <italic>true</italic>
+     <bold>true</bold>
+     <strikeout>false</strikeout>
+    </font>
+   </property>
+   <property name="text">
+    <string>Welcome,</string>
+   </property>
+  </widget>
+  <widget class="QWidget" name="layoutWidget">
+   <property name="geometry">
+    <rect>
+     <x>550</x>
+     <y>20</y>
+     <width>350</width>
+     <height>46</height>
+    </rect>
+   </property>
+   <layout class="QHBoxLayout" name="horizontalLayout_2">
+    <item>
+     <widget class="QTextEdit" name="search_field">
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>20</height>
+       </size>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="search_button">
+      <property name="text">
+       <string>Search</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="mostView_button">
+      <property name="text">
+       <string>Most View</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QFrame" name="frame">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>90</y>
+     <width>921</width>
+     <height>531</height>
+    </rect>
+   </property>
+   <property name="frameShape">
+    <enum>QFrame::StyledPanel</enum>
+   </property>
+   <property name="frameShadow">
+    <enum>QFrame::Raised</enum>
+   </property>
+   <widget class="QWidget" name="gridLayoutWidget">
+    <property name="geometry">
+     <rect>
+      <x>-1</x>
+      <y>-1</y>
+      <width>921</width>
+      <height>531</height>
+     </rect>
+    </property>
+    <layout class="QGridLayout" name="gridLayout">
+     <item row="1" column="0">
+      <widget class="QTableWidget" name="tabooWord_list"/>
+     </item>
+     <item row="0" column="0">
+      <widget class="QLabel" name="tabooList_label">
+       <property name="text">
+        <string>Taboo Words List</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="2">
+      <widget class="QTableWidget" name="complaint_list"/>
+     </item>
+     <item row="1" column="1">
+      <widget class="QTableWidget" name="requestList"/>
+     </item>
+     <item row="0" column="1">
+      <widget class="QLabel" name="requestList_label">
+       <property name="text">
+        <string>Request List</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="2">
+      <widget class="QLabel" name="complaintList_label">
+       <property name="text">
+        <string>Complaint List</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="3">
+      <widget class="QTableWidget" name="lockDoc_list"/>
+     </item>
+     <item row="0" column="3">
+      <widget class="QLabel" name="lockedDoc_label">
+       <property name="text">
+        <string>Locked Document List</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QLabel" name="email_label">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>40</y>
+     <width>211</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>17</pointsize>
+    </font>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

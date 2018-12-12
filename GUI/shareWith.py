@@ -9,13 +9,14 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 import DB
 from Editor.ShareEngine import ngrok as Tunnel
+import Document
 
 
 class Ui_ShareWith(object):
     def setupUi(self, ShareWith, src, filename):
         self.src = src
         self.filename= filename
-
+        self.target = None
 
         ShareWith.setObjectName("ShareWith")
         ShareWith.resize(651, 198)
@@ -29,16 +30,25 @@ class Ui_ShareWith(object):
         self.buttonBox.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel|QtWidgets.QDialogButtonBox.Ok)
         self.buttonBox.setObjectName("buttonBox")
         self.gridLayout.addWidget(self.buttonBox, 1, 0, 1, 1)
+        self.checkBox = QtWidgets.QCheckBox(ShareWith)
+        self.checkBox.setObjectName("checkBox")
+        self.gridLayout.addWidget(self.checkBox, 1, 0, 1, 1)
 
         self.retranslateUi(ShareWith)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(ShareWith.reject)
+
+
+
         QtCore.QMetaObject.connectSlotsByName(ShareWith)
 
 
     def retranslateUi(self, ShareWith):
         _translate = QtCore.QCoreApplication.translate
         ShareWith.setWindowTitle(_translate("ShareWith", "Share With .."))
+        self.checkBox.setText(_translate("ShareWith", "Restricted: Can be viewed by GU"))
+
+
 
     def accept(self):
         self.target = self.shareTarget.text()
@@ -66,7 +76,11 @@ class Ui_ShareWith(object):
             em.exec_()
 
     def returnShare(self):
-        return self.target
+        if self.target is not None:
+            return self.target
+
+    def checkStatus(self):
+        return self.checkBox.isChecked()
 
 
 if __name__ == "__main__":

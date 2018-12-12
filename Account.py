@@ -92,16 +92,23 @@ def promoteToSU(email):
     return True
 
 
-def createGuest(email, password,name, techInterest):
+def createGuest(email, password, name, techInterest):
     """
         For GU
     :param email:
     :param password: IS AN EMPTY STRING
     :return:
     """
+    hashedPSD = bcrypt.hashpw(password.encode('utf8'), bcrypt.gensalt())
+
     if not DB.checkUserExists(email):
-        DB.addUser(email, password, '2', name, techInterest)  # 2 for GU
-        return True
+        if not DB.checkAppExist(email):
+            DB.addGuestPending(email, hashedPSD.hex() , '1', name, techInterest)
+            return True
+        else:
+            return 2
+    else:
+        return -1
 
 
 def OUapplication(email, name, listoftechinterests):

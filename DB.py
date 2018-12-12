@@ -6,7 +6,9 @@ Firebase.initial()
 root = db.reference()
 tabooWord = root.child('Taboo_word')
 user = root.child('User')
-
+pendingApp = root.child("Pending_application")
+suggestTaboo = root.child('Suggest_taboo')
+complains = root.child("Complains")
 
 def removeIllegalChar(str):
     return ''.join(e for e in str if e.isalnum())
@@ -27,6 +29,38 @@ def checkUserExists(email):
         print("checkUserExists()")
         print(e)
 
+def checkAppExist(email):
+    try:
+        ref = pendingApp.child(removeIllegalChar(email))
+        if not ref.get() == None:
+            return True
+        else:
+            return False
+    except Exception as e:
+        print("checkappexist")
+        print(e)
+
+def getPendingApp():
+    try:
+        ref = pendingApp.get()
+        return ref
+    except Exception as e:
+        print(e)
+
+def addGuestPending(email, psd, userType, name, techInterest):
+    try:
+        pendingApp.child(removeIllegalChar(email)).set({
+            'Email': email,
+            'Password': psd,
+            'User_type': userType,
+            'Logged_in': False,
+            'Name': tolower(name),
+            'Tech_interest': techInterest
+        })
+        return True
+    except Exception as e:
+        print(e)
+
 
 def addUser(email, psd, userType, name, techInterest):
     try:
@@ -35,13 +69,13 @@ def addUser(email, psd, userType, name, techInterest):
             'Password': psd,
             'User_type': userType,
             'Logged_in': False,
-            'Name': name
+            'Name': tolower(name)
         })
 
-        for interest in techInterest:
-            user.child(removeIllegalChar(email)).child('Tech_interest').update({
-                interest:interest
-            })
+
+        user.child(removeIllegalChar(email)).update({
+                "Tech_interest": techInterest
+        })
 
         return True
     except Exception as e:
@@ -131,30 +165,12 @@ def firstTimeApply(email):
         return False
 
 
-def application(email, name, listofinterest):
-    try:
-        ref = user.child(removeIllegalChar(email))
-        ref.update({
-            "Application": {
-                "Status": "Pending",
-                "Name": name
-            }
-        })
-
-        for interest in listofinterest:
-            ref.child("Application/Tech_interest").update({
-                interest: interest
-            })
-        return True
-
-    except Exception as e:
-        print("application()")
-        print(e)
 
 
 def fileComplain(email, filename, content):
     try:
-        ref = user.child(removeIllegalChar(email)).child("Complains")
+        print(email, filename, content)
+        ref = root.child("Complains").child(removeIllegalChar(email))
         ref.update({
             filename: content
         })
@@ -225,12 +241,69 @@ def deleteInvitation(email,target,filename):
     except Exception as e:
         print(e)
 
+def allUsers():
+    """
 
-def setViewCount(views):
-    root.child('View_counter').child(removeIllegalChar('hrgutou@gmail.com')).child('234').listen(callback)
+    :return: list
+    """
+    try:
+        ref = user.get()
+        result = []
+        if ref is not None:
+            for key in ref:
+                result.append(key)
+        return result
+    except Exception as e:
+        print(e)
 
-def callback():
-    pass
+
+def getUserINFO(name):
+    try:
+        result=[]
+
+        ref= user.get()
+        if ref is not None:
+            for person in ref:
+                if ref[person]["Name"]== name:
+                    result.append(ref[person]['Email'])
+                    result.append(ref[person]['Tech_interest'])
+                    result.append(ref[person]['Name'])
+        return result
+
+    except Exception as e:
+        print(e)
+
+
+def GUpromote(email):
+    try:
+        ref = pendingApp.child(removeIllegalChar(email))
+        store = ref.get()
+        user.child(removeIllegalChar(store['Email'])).update(store)
+        ref.delete()
+
+    except Exception as e:
+        print(e)
+
+def GUdeleteAPP(email):
+    try:
+        ref = pendingApp.child(removeIllegalChar(email))
+        ref.delete()
+
+    except Exception as e:
+        print(e)
+
+def getComplains():
+    try:
+        ref = complains.get()
+        return ref
+    except Exception as e:
+        print(e)
+
+def resolveComplains(email,filename):
+    try:
+        ref = complains.child(removeIllegalChar(email)).child(filename).delete()
+    except Exception as e:
+        print(e)
 
 if __name__ == '__main__':
-    setViewCount('')
+    print(getUserINFO('SU'))

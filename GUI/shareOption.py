@@ -31,21 +31,21 @@ class Ui_shareOption(object):
         self.gridLayout.addWidget(self.label, 0, 0, 1, 3)
         self.pushButton_2 = QtWidgets.QPushButton(shareOption)
         self.pushButton_2.setObjectName("pushButton_2")
-        self.gridLayout.addWidget(self.pushButton_2, 3, 1, 1, 1)
-        self.pushButton_3 = QtWidgets.QPushButton(shareOption)
-        self.pushButton_3.setObjectName("pushButton_3")
-        self.gridLayout.addWidget(self.pushButton_3, 3, 2, 1, 1)
+        self.gridLayout.addWidget(self.pushButton_2, 3, 2, 1, 1)
+
         self.label_2 = QtWidgets.QLabel(shareOption)
         self.label_2.setAlignment(QtCore.Qt.AlignCenter)
         self.label_2.setObjectName("label_2")
         self.gridLayout.addWidget(self.label_2, 1, 0, 1, 3)
         self.pushButton = QtWidgets.QPushButton(shareOption)
         self.pushButton.setObjectName("pushButton")
+        print(Document.checkFilePermission(self.email, self.filename))
 
-        if not Document.checkFilePermission(self.email, self.filename) == 'private' or None:
-            self.pushButton.setText("Private")
+        if Document.checkFilePermission(self.email, self.filename) == 'private':
+            self.pushButton.setText('Public')
         else:
-            self.pushButton.setText("Public")
+            self.pushButton.setText('Private')
+
 
 
         self.gridLayout.addWidget(self.pushButton, 3, 0, 1, 1)
@@ -61,7 +61,6 @@ class Ui_shareOption(object):
 
         self.pushButton.clicked.connect(self.public)
         self.pushButton_2.clicked.connect(self.share)
-        self.pushButton_3.clicked.connect(self.restricted)
 
 
     def retranslateUi(self, shareOption):
@@ -69,7 +68,6 @@ class Ui_shareOption(object):
         shareOption.setWindowTitle(_translate("shareOption", "Dialog"))
         self.label.setText(_translate("shareOption", "Public: Can be seen by everyone. (Read-only)   "))
         self.pushButton_2.setText(_translate("shareOption", "Shared"))
-        self.pushButton_3.setText(_translate("shareOption", "Restricted"))
         self.label_2.setText(_translate("shareOption", "Shared: View and edit with other OUs"))
 
 
@@ -84,6 +82,7 @@ class Ui_shareOption(object):
                 Document.saveDoc(self.email, self.modified, self.filename,'public')
 
             Document.setPermission(self.email, self.filename, 'public')
+            self.pushButton.setText('Private')
         else:
             if not self.modified.is_file():
                 Document.saveDoc(self.email, '../cache', self.filename, 'private')
@@ -91,19 +90,23 @@ class Ui_shareOption(object):
                 Document.saveDoc(self.email, self.modified, self.filename, 'private')
 
             Document.setPermission(self.email, self.filename, 'private')
+            self.pushButton.setText('Public')
+
 
     def share(self):
         """
             save the current docs
 
         """
+        currentPermission = Document.checkFilePermission(self.email, self.filename)
+        if currentPermission is None:
+            currentPermission = 'private'
 
         if self.modified.is_file():
-            Document.saveDoc(self.email, self.modified, self.filename,'share')
+            Document.saveDoc(self.email, self.modified, self.filename,currentPermission)
             copyfile('../cacheModified', '../cacheShare')
         else:
-            Document.saveDoc(self.email, '../cache', self.filename,'share')
-        Document.setPermission(self.email, self.filename, 'share')
+            Document.saveDoc(self.email, '../cache', self.filename,currentPermission)
 
         self.shareWith = QtWidgets.QDialog()
         self.ui = shareWith.Ui_ShareWith()
@@ -113,11 +116,16 @@ class Ui_shareOption(object):
             start ngrok for real time editing
                     
         """
-        self.ngrok = Tunnel.NgrokTunnel()
-        self.link = self.ngrok.start()
-        DB.shareTarget(self.email,self.filename, self.ui.returnShare(), self.link)
+        if self.ui.returnShare():
+            self.ngrok = Tunnel.NgrokTunnel()
+            self.link = self.ngrok.start()
+            DB.shareTarget(self.email,self.filename, self.ui.returnShare(), self.link)
+            if self.ui.checkStatus():
+                Document.setPermission(self.email, self.filename, 'restricted')
+            else:
+                Document.setPermission(self.email, self.filename, 'share')
 
-        print(self.ngrok.start())
+            print(self.ngrok.start())
 
     def restricted(self):
         Document.saveDoc(self.email, self.modified, self.filename,'restricted')
