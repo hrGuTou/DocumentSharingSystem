@@ -1,5 +1,17 @@
 # Document Sharing System
-Work in progress
+Complete v1.0<br/>
+
+# Environment Setup
+Install ngrok<br/>
+Signup Firebase account and setup Firebase Storage and Firebase Database<br/>
+
+# Firebase Credential Setup
+Download database secret key json file from Firebase<<br/>
+Put json in all `/Firebase_cred` folder<br/>
+Open `Firebase.py` to modifiy json location<br/>
+
+# Run
+Run from `/GUI/login.py`<br/>
 
 # Team Members:
 KaiHang Chen<br>
