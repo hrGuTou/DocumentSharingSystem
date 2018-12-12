@@ -2,7 +2,7 @@
 Complete v1.0<br/>
 
 # Environment Setup
-Install ngrok<br/>
+Install and complete setup Ngrok<br/>
 Signup Firebase account and setup Firebase Storage and Firebase Database<br/>
 
 # Firebase Credential Setup
@@ -26,6 +26,7 @@ LLHC
 Python<br>
 Socket.io<br>
 Firebase<br>
+Ngrok<br/>
 
 # Frontend:
 PYQT5
