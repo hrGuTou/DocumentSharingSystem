@@ -15,7 +15,7 @@ Run from `/GUI/login.py`<br/>
 
 # Screenshots
 #### Real Time Editing<br/>
-![Alt text](/images/RealTimeEdit.gif?raw=true)<br/>
+![Alt text](/images/RealTimeEditing.gif?raw=true)<br/>
 #### Sign Up GUI<br/>
 ![Alt text](/images/Signup.png?raw=true)<br/>
 #### Login Up GUI<br/>
