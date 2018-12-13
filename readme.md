@@ -46,9 +46,9 @@ Run from `/GUI/login.py`<br/>
   2: Able to search within own documents by enter a keyword and return a list of the documents contains the keyword<br/>
            
   3: Click the `New Document` button to create a new document and open an editor window<br/>
-           - Once enter the name of the document and the context, OU can click `save` button to save the document<br/>
-           - Or just close the window after finished editing, auto-save feature will save your document<br/>
-           - If the document is already in the database, `save` button will become `lock` or `unlock` based on the document's current status. User can lock he's own file to prevent unauthorized changes.<br/>
+    > Once enter the name of the document and the context, OU can click `save` button to save the document<br/>
+    > Or just close the window after finished editing, auto-save feature will save your document<br/>
+    > If the document is already in the database, `save` button will become `lock` or `unlock` based on the document's current status. User can lock he's own file to prevent unauthorized changes.<br/>
            
   4: Inside of the eiditor window, OU can click the `shared` button to change the type of the document to public, private, and access only through share<br/>
          
