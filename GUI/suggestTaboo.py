@@ -41,6 +41,8 @@ class Ui_Dialog(QtWidgets.QDialog):
         taboo_words = self.taboo_word_field.toPlainText()
 
 
+
+
         print("submit button in suggestion taboo word is clicked")
         if taboo_words =='':
             em = QtWidgets.QMessageBox()
@@ -55,6 +57,12 @@ class Ui_Dialog(QtWidgets.QDialog):
                 result[i] = result[i].strip(" ")
 
             Taboo.suggestTaboo(result)
+        em = QtWidgets.QMessageBox()
+        em.setIcon(QtWidgets.QMessageBox.Warning)
+        em.setText("Suggestion is sent to Super User")
+        em.setStandardButtons(QtWidgets.QMessageBox.Ok)
+        em.exec()
+
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     Dialog = QtWidgets.QDialog()

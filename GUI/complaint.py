@@ -78,6 +78,11 @@ class Ui_Dialog(QtWidgets.QDialog):
 
         else:
             fileComplain(email, filename, reason)
+            em = QtWidgets.QMessageBox()
+            em.setIcon(QtWidgets.QMessageBox.Information)
+            em.setText("Complaint is sent to Super User!")
+            em.setStandardButtons(QtWidgets.QMessageBox.Ok)
+            em.exec()
 
     def setFileName(self, filename):
         self.doc_name_field.setText(filename)

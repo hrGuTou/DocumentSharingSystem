@@ -211,7 +211,7 @@ class Ui_Dialog(object):
     def complaint(self):
         self.complaintWindow = QtWidgets.QDialog()
         self.ui = Complaint_window(self.complaintWindow)
-        self.ui.setYourEmail(self.email)
+        #self.ui.setTargetEmail(self.email)
         self.ui.exec()
 
     def publicdocClickListener(self, item):

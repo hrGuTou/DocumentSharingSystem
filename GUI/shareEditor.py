@@ -12,6 +12,9 @@ from flask import Flask
 import threading
 import Document
 import DB
+from GUI.suggestTaboo import Ui_Dialog as Suggestion_window
+
+
 class Ui_shareDoc(object):
     def setupUi(self, shareDoc, url, original, filename):
         self.url = url
@@ -35,7 +38,12 @@ class Ui_shareDoc(object):
         self.retranslateUi(shareDoc)
         QtCore.QMetaObject.connectSlotsByName(shareDoc)
         self.be()
+        self.suggestTaboo.clicked.connect(self.sugTaboo)
 
+    def sugTaboo(self):
+            self.suggestionWindow = QtWidgets.QDialog()
+            self.ui = Suggestion_window(self.suggestionWindow)
+            self.ui.exec()
 
     def be(self):
         self.docID = Document.getLastestVersion(self.original, self.filename)
@@ -44,11 +52,11 @@ class Ui_shareDoc(object):
     def handler(self,data):
         ref = DB.user.child(DB.removeIllegalChar(self.original)).child("Document_history").child(self.docID).get()
         print(ref)
-        if ref['Locked'] == 'Lock':
-            time.sleep(1)
+        if ref['Locked'] == True:
+            time.sleep(2)
             self.webView.page().runJavaScript("$('#Editor').prop('disabled', true);")
         else:
-            time.sleep(1)
+            time.sleep(2)
             self.webView.page().runJavaScript("$('#Editor').prop('disabled', false);")
 
     def retranslateUi(self, shareDoc):

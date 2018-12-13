@@ -41,15 +41,6 @@ class Guest_Dialog(QDialog):
         self.public_label.setObjectName("public_label")
         self.gridLayout.addWidget(self.public_label, 5, 0, 1, 3)
 
-        ################ complaint button ####################
-        self.complaint_button = QtWidgets.QPushButton(Dialog)
-        self.complaint_button.setObjectName("complaint_button")
-        self.gridLayout.addWidget(self.complaint_button, 9, 2, 1, 1)
-
-        ######################### report button event ##################
-        self.complaint_button.clicked.connect(self.complaint_event)
-        ################################################################
-
         ############### sign up button    #####################
         self.signup_button = QtWidgets.QPushButton(Dialog)
         self.signup_button.setObjectName("signup_button")
@@ -58,18 +49,6 @@ class Guest_Dialog(QDialog):
         ########################## sign up button event ################
         self.signup_button.clicked.connect(self.signup_event)
         ################################################################
-
-        ############## taboo word suggestion ##########################
-        self.suggestion_button = QtWidgets.QPushButton(Dialog)
-        self.suggestion_button.setObjectName("suggestion_button")
-        self.suggestion_button.setText("Taboo Suggestion")
-        self.gridLayout.addWidget(self.suggestion_button, 9, 1, 1, 1)
-
-        ######################## taboo word suggestion button event #####
-        self.suggestion_button.clicked.connect(self.suggestion_event)
-        #################################################################
-
-
 
         self.publicDoc = QtWidgets.QListWidget(Dialog)
         self.publicDoc.setObjectName("publicDoc")
@@ -96,18 +75,6 @@ class Guest_Dialog(QDialog):
         self.gridLayout.addWidget(self.mostView_label, 3, 0, 1, 3)
         spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
 
-        self.gridLayout.addItem(spacerItem, 0, 1, 1, 1)
-        self.horizontalLayout = QtWidgets.QHBoxLayout()
-        self.horizontalLayout.setObjectName("horizontalLayout")
-        self.textEdit = QtWidgets.QTextEdit(Dialog)
-        self.textEdit.setMaximumSize(QtCore.QSize(16777215, 20))
-        self.textEdit.setObjectName("textEdit")
-
-        self.horizontalLayout.addWidget(self.textEdit)
-        self.search_button = QtWidgets.QPushButton(Dialog)
-        self.search_button.setObjectName("search_button")
-        self.horizontalLayout.addWidget(self.search_button)
-        self.gridLayout.addLayout(self.horizontalLayout, 0, 2, 1, 1)
 
         self.restrictDoc = QtWidgets.QListWidget(Dialog)
         self.restrictDoc.setObjectName("restrictDoc")
@@ -121,7 +88,6 @@ class Guest_Dialog(QDialog):
         self.publicDoc.raise_()
         self.signup_button.raise_()
         self.restricted_label.raise_()
-        self.complaint_button.raise_()
 
         self.addItem()
 
@@ -132,18 +98,15 @@ class Guest_Dialog(QDialog):
         #########################################################
         self.retranslateUi(Dialog)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
-        self.setTabOrder(self.textEdit, self.search_button)
 
     def retranslateUi(self, Dialog):
         _translate = QtCore.QCoreApplication.translate
         self.setWindowTitle(_translate("Dialog", "Dialog"))
-        self.complaint_button.setText(_translate("Dialog", "Complaint"))
         self.signup_button.setText(_translate("Dialog", "Sign Up"))
         self.welcome_label.setText(_translate("Dialog", "<html><head/><body><p><span style=\" font-size:18pt; font-style:italic; color:#ffffff;\">Welcome To LLHC</span></p><p><span style=\" font-size:18pt; font-style:italic; color:#ffffff;\">Document Sharing System</span></p></body></html>"))
         self.public_label.setText(_translate("Dialog", "Public Documents"))
         self.restricted_label.setText(_translate("Dialog", "Restricted Documents"))
         self.mostView_label.setText(_translate("Dialog", "Most Viewed"))
-        self.search_button.setText(_translate("Dialog", "Search"))
 
     # event hanlder for sign up button
     def signup_event(self):
@@ -151,21 +114,6 @@ class Guest_Dialog(QDialog):
         self.signUpWindow = QtWidgets.QDialog()
         self.ui = Signup_Dialog(self.signUpWindow, type ='gu')
         self.ui.exec_()
-
-    # event handler for complaint button
-    def complaint_event(self):
-        print("complaint is pressed")
-        self.complaintWindow = QtWidgets.QDialog()
-        self.ui = Complaint_window(self.complaintWindow)
-        self.ui.exec()
-
-
-    def suggestion_event(self):
-        print("suggestion event is pressed")
-        self.suggestionWindow = QtWidgets.QDialog()
-        self.ui = Suggestion_window(self.suggestionWindow)
-        self.ui.exec()
-
 
     def addItem(self):
         self.mostViewFile = getMostview()

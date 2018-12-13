@@ -338,6 +338,13 @@ class Ui_Dialog(object):
         self.mostView.clear()
         self.publicDoc.clear()
         self.selfDocs.clear()
+        self.tabooWord_list.setRowCount(0)
+        self.tableWidget.setRowCount(0)
+        self.requestList.setRowCount(0)
+        self.lockDoc_list.setRowCount(0)
+        self.addlockFile()
+        self.getGUapp()
+        self.addTaboo()
         self.additems()
 
     def addTaboo(self):
