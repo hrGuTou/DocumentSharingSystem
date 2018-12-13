@@ -342,6 +342,8 @@ class Ui_Dialog(object):
         self.tableWidget.setRowCount(0)
         self.requestList.setRowCount(0)
         self.lockDoc_list.setRowCount(0)
+        self.complaint_list.setRowCount(0)
+        self.addComplain()
         self.addlockFile()
         self.getGUapp()
         self.addTaboo()
