@@ -20,11 +20,11 @@ Run from `/GUI/login.py`<br/>
 ![Alt text](/images/Signup.png?raw=true)<br/>
 #### Login Up GUI<br/>
 ![Alt text](/images/login.png?raw=true)
-#### Main Window for GU<br/>
+#### Main Window for Guest User<br/>
 ![Alt text](/images/GUMainWindow.png?raw=true)
-#### Main Window for OU<br/>
+#### Main Window for Ordinary User<br/>
 ![Alt text](/images/OUMainPage.png?raw=true)
-#### Main Window for SU<br/>
+#### Main Window for Super User<br/>
 ![Alt text](/images/SUMainWindow.png?raw=true)
 
 # Functionality
